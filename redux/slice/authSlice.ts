@@ -23,9 +23,9 @@ export const requestOtp = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      // console.log("mobile:", mobile);
-      // console.log("v3Token:", v3Token);
-      // console.log("v2Token:", v2Token);
+      console.log("mobile:", mobile);
+      console.log("v3Token:", v3Token);
+      console.log("v2Token:", v2Token);
 
       const response = await fetch(`${BASE_URL}/auth/request-otp`, {
         method: "POST",

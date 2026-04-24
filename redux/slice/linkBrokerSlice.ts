@@ -12,6 +12,7 @@ export const getBroker = createAsyncThunk(
         method: "GET",
         auth: true,
       });
+      console.log(data, "=======broker");
 
       return data;
     } catch (error: any) {

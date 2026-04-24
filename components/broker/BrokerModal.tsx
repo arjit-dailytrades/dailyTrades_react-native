@@ -31,6 +31,18 @@ const BROKER_ASSETS: { [key: string]: { name: string; icon: any } } = {
     name: "Dhan",
     icon: require("../../assets/images/dhan.png"),
   },
+  ANGELOne: {
+    name: "Angel One",
+    icon: require("../../assets/images/angelone.png"),
+  },
+  UPSTOX: {
+    name: "Upstox",
+    icon: require("../../assets/images/UPSTOX.png"),
+  },
+  FYERS: {
+    name: "Fyers",
+    icon: require("../../assets/images/fyers.jpg"),
+  },
 };
 
 interface BrokerModalProps {

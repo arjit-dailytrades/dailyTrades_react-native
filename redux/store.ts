@@ -2,7 +2,9 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slice/authSlice";
 import advisorReducer from "./slice/expertSlice";
 import brokerReducer from "./slice/linkBrokerSlice";
+import orderReducer from "./slice/orderSlice";
 import scriptReducer from "./slice/scriptSlice";
+import subscriptionReducer from "./slice/subscriptionSlice";
 import supportReducer from "./slice/supportSlice";
 import themeReducer from "./slice/themeSlice";
 
@@ -14,6 +16,8 @@ export const store = configureStore({
     expert: advisorReducer,
     broker: brokerReducer,
     support: supportReducer,
+    order: orderReducer,
+    subscription: subscriptionReducer,
   },
 });
 
