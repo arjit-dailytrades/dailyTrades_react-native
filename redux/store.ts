@@ -7,6 +7,7 @@ import scriptReducer from "./slice/scriptSlice";
 import subscriptionReducer from "./slice/subscriptionSlice";
 import supportReducer from "./slice/supportSlice";
 import themeReducer from "./slice/themeSlice";
+import transactionReducer from "./slice/transactionsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
     support: supportReducer,
     order: orderReducer,
     subscription: subscriptionReducer,
+    transaction: transactionReducer,
   },
 });
 

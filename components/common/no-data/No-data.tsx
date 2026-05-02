@@ -1,80 +1,58 @@
+import TextAtom from "@/components/atoms/TextAtom";
+import { useAppTheme } from "@/hooks/use-app-theme";
+import { Image } from "expo-image";
 import React from "react";
-import {
-    Dimensions,
-    Image,
-    StyleSheet,
-    Text,
-    useColorScheme,
-    View,
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 
 interface NoDataProps {
   title?: string;
-  msg?: string;
+  subTitle?: string;
 }
 
-const { width } = Dimensions.get("window");
-
 const NoData = ({
-  title = "No Data",
-  msg = "Reload to get data!",
+  title = "No results found",
+  subTitle = "We can't find any items matching your search.",
 }: NoDataProps) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-
-  // Theme based styles
-  const theme = {
-    text: isDark ? "#F8FAF8" : "#1A2138",
-    subText: isDark ? "#9CA3AF" : "#666666",
-    bg: isDark ? "transparent" : "#FFFFFF",
-  };
+  const theme = useAppTheme();
 
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       <Image
-        source={require("../../../assets/images/foundscript.png")}
+        source={require("../../../assets/images/not_found.png")}
+        contentFit="contain"
         style={styles.image}
-        resizeMode="contain"
       />
 
-      <View style={styles.textContainer}>
-        <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
-        <Text style={[styles.message, { color: theme.subText }]}>{msg}</Text>
-        <Text style={{ color: theme.subText }}>No records found.</Text>
-      </View>
+      <TextAtom style={[styles.title, { color: theme.textColor }]}>
+        {title}
+      </TextAtom>
+
+      <TextAtom style={[styles.subtitle, { color: theme.subText }]}>
+        {subTitle}
+      </TextAtom>
     </View>
   );
 };
 
+export default NoData;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
-    padding: 20,
-    marginTop: 40,
+    alignItems: "center",
+    padding: 24,
   },
   image: {
-    width: width * 0.7,
-    height: width * 0.7,
+    width: 150,
+    height: 150,
     marginBottom: 20,
   },
-  textContainer: {
-    alignItems: "center",
-  },
   title: {
-    fontSize: 22,
-    fontWeight: "700",
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 6,
     textAlign: "center",
-    marginBottom: 10,
-    letterSpacing: -0.5,
   },
-  message: {
-    fontSize: 15,
-    textAlign: "center",
-    lineHeight: 22,
-    paddingHorizontal: 20,
-  },
+  subtitle: { fontSize: 12, textAlign: "center", lineHeight: 18 },
 });
-
-export default NoData;

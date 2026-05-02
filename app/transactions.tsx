@@ -1,180 +1,163 @@
-import PageHeader from "@/components/common/PageHeader";
-import { Ionicons } from "@expo/vector-icons";
+import NoData from "@/components/common/no-data/No-data";
+import TransactionCard from "@/components/organisms/TransactionCard";
+import { RootState } from "@/redux/store";
+import { useCallback, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
+  RefreshControl,
   StatusBar,
   StyleSheet,
-  Text,
   useColorScheme,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
+import PageHeader from "../components/common/PageHeader";
+import { getTransactionList } from "../redux/slice/transactionsSlice";
+
+const PAGE_LIMIT = 10;
 
 export default function Transactions() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const scheme = useColorScheme();
+  const dispatch = useDispatch();
+  const { transaction, loading, totalCount } = useSelector(
+    (state: RootState) => state.transaction,
+  );
 
-  const transactions = [
-    {
-      id: "1",
-      type: "deposit",
-      amount: 5000,
-      date: "12 Mar 2026",
-      status: "Success",
+  const [page, setPage] = useState(1);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const isDark = scheme === "dark";
+
+  // ─── Initial load ────────────────────────────────────────────────────────────
+  useEffect(() => {
+    fetchTransactions(1, false);
+  }, []);
+
+  // ─── Fetch helper ─────────────────────────────────────────────────────────────
+  const fetchTransactions = useCallback(
+    async (pageNum: number, isLoadMore: boolean) => {
+      if (!isLoadMore) setPage(1);
+
+      await dispatch(
+        getTransactionList({
+          page: pageNum,
+          limit: PAGE_LIMIT,
+          sortType: "desc",
+          sortBy: "createdAt",
+          source: "ALL",
+        }) as any,
+      );
+
+      setRefreshing(false);
+      setLoadingMore(false);
     },
-    {
-      id: "2",
-      type: "withdraw",
-      amount: 2000,
-      date: "10 Mar 2026",
-      status: "Pending",
-    },
-    {
-      id: "3",
-      type: "deposit",
-      amount: 10000,
-      date: "05 Mar 2026",
-      status: "Success",
-    },
-  ];
+    [dispatch],
+  );
 
-  const colors = {
-    bg: isDark ? "#010D26" : "#ffffff",
-    card: isDark ? "#161B2C" : "#FFFFFF",
-    text: isDark ? "#FFFFFF" : "#1A2138",
-    subText: isDark ? "#9CA3AF" : "#666",
-    inputBg: isDark ? "#1F2937" : "#FFF",
-    accent: "#3B82F6",
-    border: isDark ? "#374151" : "#E5E7EB",
-    glassBorder: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
-    subtext: isDark ? "#94A3B8" : "#64748B",
-    primary: "#6366F1",
-    success: "#22C55E",
-    warning: "#F59E0B",
-  };
+  // ─── Pull to refresh ──────────────────────────────────────────────────────────
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchTransactions(1, false);
+  }, [fetchTransactions]);
 
-  const renderItem = ({ item }: any) => {
-    const isDeposit = item.type === "deposit";
+  // ─── Load next page ───────────────────────────────────────────────────────────
+  const onEndReached = useCallback(() => {
+    const hasMore = transaction.length < (totalCount ?? 0);
+    if (loadingMore || loading || !hasMore) return;
 
+    const nextPage = page + 1;
+    setPage(nextPage);
+    setLoadingMore(true);
+    fetchTransactions(nextPage, true);
+  }, [
+    loadingMore,
+    loading,
+    transaction.length,
+    totalCount,
+    page,
+    fetchTransactions,
+  ]);
+
+  // ─── Footer spinner ───────────────────────────────────────────────────────────
+  const ListFooter = () => {
+    if (!loadingMore) return null;
     return (
-      <View style={styles.card}>
-        <View style={styles.left}>
-          <View
-            style={[
-              styles.iconBox,
-              { backgroundColor: isDeposit ? "#dcfce7" : "#fee2e2" },
-            ]}
-          >
-            <Ionicons
-              name={isDeposit ? "arrow-down" : "arrow-up"}
-              size={20}
-              color={isDeposit ? "#16a34a" : "#dc2626"}
-            />
-          </View>
-
-          <View>
-            <Text style={styles.title}>
-              {isDeposit ? "Deposit" : "Withdraw"}
-            </Text>
-            <Text style={styles.date}>{item.date}</Text>
-          </View>
-        </View>
-
-        <View style={styles.right}>
-          <Text style={styles.amount}>₹{item.amount}</Text>
-          <Text style={styles.status}>{item.status}</Text>
-        </View>
+      <View style={styles.footer}>
+        <ActivityIndicator size="small" color={isDark ? "#fff" : "#333"} />
       </View>
     );
   };
 
+  // ─── Empty state ──────────────────────────────────────────────────────────────
+  const ListEmpty = () => {
+    if (loading && transaction.length === 0) {
+      return (
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={isDark ? "#fff" : "#333"} />
+        </View>
+      );
+    }
+    return <NoData />;
+  };
+
+  // ─── Render ───────────────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]}>
+    <SafeAreaView
+      style={[styles.safe, { backgroundColor: isDark ? "#0f0f0f" : "#f9f9f9" }]}
+      edges={["top"]}
+    >
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
-      <PageHeader title="Transaction" />
-      {/* List */}
+
+      <PageHeader title="Transactions" />
+
       <FlatList
-        data={transactions}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={{ padding: 16 }}
+        data={transaction}
+        keyExtractor={(item) => item._id}
+        contentContainerStyle={[
+          styles.list,
+          transaction.length === 0 && styles.listEmpty,
+        ]}
+        showsVerticalScrollIndicator={false}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.3}
+        ListEmptyComponent={<ListEmpty />}
+        ListFooterComponent={<ListFooter />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={isDark ? "#fff" : "#333"}
+          />
+        }
+        renderItem={({ item }) => <TransactionCard item={item} />}
       />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safe: {
     flex: 1,
   },
-
-  header: {
-    flexDirection: "row",
+  list: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 32,
+  },
+  listEmpty: {
+    flexGrow: 1, // lets empty / loading states center vertically
+  },
+  centered: {
+    flex: 1,
     alignItems: "center",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-  },
-
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginLeft: 10,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
     justifyContent: "center",
+    paddingTop: 80,
+  },
+  footer: {
+    paddingVertical: 20,
     alignItems: "center",
-    backgroundColor: "#fff",
-    elevation: 2,
-  },
-
-  card: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#fcfafa",
-    padding: 14,
-    borderRadius: 14,
-    marginBottom: 12,
-  },
-
-  left: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  iconBox: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 10,
-  },
-
-  title: {
-    fontSize: 15,
-    fontWeight: "600",
-  },
-
-  date: {
-    fontSize: 12,
-    color: "#6b7280",
-  },
-
-  right: {
-    alignItems: "flex-end",
-  },
-
-  amount: {
-    fontSize: 16,
-    fontWeight: "700",
-  },
-
-  status: {
-    fontSize: 12,
-    color: "#6b7280",
   },
 });
