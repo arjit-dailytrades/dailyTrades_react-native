@@ -1,5 +1,6 @@
 import NoData from "@/components/common/no-data/No-data";
 import TransactionCard from "@/components/organisms/TransactionCard";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { RootState } from "@/redux/store";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -9,7 +10,7 @@ import {
   StatusBar,
   StyleSheet,
   useColorScheme,
-  View
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,9 +22,11 @@ const PAGE_LIMIT = 10;
 export default function Transactions() {
   const scheme = useColorScheme();
   const dispatch = useDispatch();
+  const theme = useAppTheme();
   const { transaction, loading, totalCount } = useSelector(
     (state: RootState) => state.transaction,
   );
+  console.log(totalCount, "========totalcount");
 
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
@@ -31,12 +34,10 @@ export default function Transactions() {
 
   const isDark = scheme === "dark";
 
-  // ─── Initial load ────────────────────────────────────────────────────────────
   useEffect(() => {
     fetchTransactions(1, false);
   }, []);
 
-  // ─── Fetch helper ─────────────────────────────────────────────────────────────
   const fetchTransactions = useCallback(
     async (pageNum: number, isLoadMore: boolean) => {
       if (!isLoadMore) setPage(1);
@@ -57,13 +58,11 @@ export default function Transactions() {
     [dispatch],
   );
 
-  // ─── Pull to refresh ──────────────────────────────────────────────────────────
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchTransactions(1, false);
   }, [fetchTransactions]);
 
-  // ─── Load next page ───────────────────────────────────────────────────────────
   const onEndReached = useCallback(() => {
     const hasMore = transaction.length < (totalCount ?? 0);
     if (loadingMore || loading || !hasMore) return;
@@ -81,7 +80,7 @@ export default function Transactions() {
     fetchTransactions,
   ]);
 
-  // ─── Footer spinner ───────────────────────────────────────────────────────────
+  //  Footer spinner
   const ListFooter = () => {
     if (!loadingMore) return null;
     return (
@@ -91,7 +90,7 @@ export default function Transactions() {
     );
   };
 
-  // ─── Empty state ──────────────────────────────────────────────────────────────
+  //  Empty state
   const ListEmpty = () => {
     if (loading && transaction.length === 0) {
       return (
@@ -103,10 +102,10 @@ export default function Transactions() {
     return <NoData />;
   };
 
-  // ─── Render ───────────────────────────────────────────────────────────────────
+  //  Render
   return (
     <SafeAreaView
-      style={[styles.safe, { backgroundColor: isDark ? "#0f0f0f" : "#f9f9f9" }]}
+      style={[styles.safe, { backgroundColor: theme.bg }]}
       edges={["top"]}
     >
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />

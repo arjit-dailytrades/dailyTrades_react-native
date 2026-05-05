@@ -1,12 +1,10 @@
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
+import { Entypo, Feather, SimpleLineIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Tabs } from "expo-router";
 import React from "react";
-import { Dimensions, Platform, StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const { width } = Dimensions.get("window");
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -51,7 +49,7 @@ export default function TabLayout() {
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconWrapper, focused && styles.activeCircle]}>
-              <Feather name="home" size={22} color={color} />
+              <Entypo name="home" size={22} color={color} />
             </View>
           ),
         }}
@@ -63,7 +61,7 @@ export default function TabLayout() {
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconWrapper, focused && styles.activeCircle]}>
-              <FontAwesome name="tripadvisor" size={20} color={color} />
+              <Feather name="users" size={20} color={color} />
             </View>
           ),
         }}
@@ -75,12 +73,12 @@ export default function TabLayout() {
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconWrapper, focused && styles.activeCircle]}>
-              <AntDesign name="transaction" size={20} color={color} />
+              {/* <AntDesign name="transaction" size={20} color={color} /> */}
+              <SimpleLineIcons name="handbag" size={20} color={color} />
             </View>
           ),
         }}
       />
-
       <Tabs.Screen
         name="profile"
         options={{
@@ -88,18 +86,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconWrapper, focused && styles.activeCircle]}>
               <Feather name="user" size={20} color={color} />
-            </View>
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="setting"
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconWrapper, focused && styles.activeCircle]}>
-              <Feather name="settings" size={20} color={color} />
             </View>
           ),
         }}

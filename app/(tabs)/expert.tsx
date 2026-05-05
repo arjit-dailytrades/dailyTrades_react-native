@@ -56,7 +56,15 @@ export default function ExpertScreen() {
   // 2. Load More Pages
   useEffect(() => {
     if (page > 1) {
-      dispatch(fetchExpert({ page, search }));
+      dispatch(
+        fetchExpert({
+          page,
+          debouncedSearch,
+          type,
+          follow,
+          favorite,
+        }),
+      );
     }
   }, [page]);
 
@@ -80,12 +88,13 @@ export default function ExpertScreen() {
   };
 
   const handleLoadMore = () => {
-    if (!isExpertLoading && experts?.pages > page) {
+    const hasMore = experts?.records?.length < (experts?.total || 0);
+
+    if (!isExpertLoading && hasMore) {
       setPage((prev) => prev + 1);
     }
   };
 
-  // Footer Loader (Sirf scroll karte waqt niche dikhega)
   const renderFooter = () => {
     if (isExpertLoading && page > 1) {
       return (

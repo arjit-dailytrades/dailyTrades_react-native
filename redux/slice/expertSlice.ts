@@ -29,7 +29,11 @@ export const fetchExpert = createAsyncThunk(
         auth: true,
       });
 
-      return data;
+      return {
+        records: data.records,
+        total: data.total,
+        page: data.page,
+      };
     } catch (error: any) {
       return rejectWithValue(error?.message || "Failed to fetch advisors");
     }
@@ -260,7 +264,21 @@ const advisorSlice = createSlice({
       })
       .addCase(fetchExpert.fulfilled, (state, action) => {
         state.isExpertLoading = false;
-        state.experts = action.payload;
+
+        const { records, total, page } = action.payload;
+
+        if (page === 1) {
+          state.experts = {
+            records,
+            total,
+          };
+        } else {
+          state.experts = {
+            ...state.experts,
+            records: [...state.experts.records, ...records],
+            total,
+          };
+        }
       })
       .addCase(fetchExpert.rejected, (state, action: any) => {
         state.isExpertLoading = false;

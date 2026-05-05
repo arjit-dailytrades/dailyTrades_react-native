@@ -11,12 +11,11 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { setUser } from "@/redux/slice/authSlice";
 import { RootState, store } from "@/redux/store";
-import { getLtpData, initWebsocket } from "@/services/socketService";
+import { initWebsocket } from "@/services/socketService";
 import { getUpdatedProfile, isAuthenticated } from "@/utils/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Image } from "expo-image";
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Provider, useDispatch, useSelector } from "react-redux";
 
@@ -30,13 +29,13 @@ function Navigation() {
   useEffect(() => {
     initWebsocket(user);
 
-    const interval = setInterval(() => {
-      const data = getLtpData();
-      // console.log("LTP DATA", data);
-    }, 1000);
+    // const interval = setInterval(() => {
+    //   const data = getLtpData();
+    //   // console.log("LTP DATA", data);
+    // }, 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+    // return () => clearInterval(interval);
+  }, [user]);
   useEffect(() => {
     const loadData = async () => {
       const userInfo = await isAuthenticated();
@@ -63,16 +62,23 @@ function Navigation() {
     checkToken();
   }, []);
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+  const isLoggedIn = !!token && !!user;
 
   const inAuthGroup = segments[0] === "(auth)";
 
   // Auth Guard Logic
-  if (!token && !inAuthGroup) {
+  if (!isLoggedIn && !inAuthGroup) {
     return <Redirect href="/(auth)/login" />;
   }
 
-  if (token && inAuthGroup) {
+  if (isLoggedIn && inAuthGroup) {
     return <Redirect href="/(tabs)" />;
   }
 
@@ -154,20 +160,6 @@ function AppContent() {
   return (
     <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
       <View style={{ flex: 1 }}>
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Image
-            source={require("../assets/images/topBG.png")}
-            style={styles.topBgImage}
-            contentFit="cover"
-          />
-
-          <Image
-            source={require("../assets/images/Vector.png")}
-            style={styles.vectorImage}
-            contentFit="cover"
-          />
-        </View>
-
         <View style={{ flex: 1, backgroundColor: "transparent" }}>
           <Navigation />
         </View>
@@ -185,54 +177,3 @@ export default function RootLayout() {
     </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  topBgImage: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 220,
-  },
-
-  vectorImage: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 220,
-    opacity: 0.5,
-  },
-});
-
-// import {
-//   DarkTheme,
-//   DefaultTheme,
-//   ThemeProvider,
-// } from "@react-navigation/native";
-// import { Stack } from "expo-router";
-// import { StatusBar } from "expo-status-bar";
-// import "react-native-reanimated";
-
-// import { useColorScheme } from "@/hooks/use-color-scheme";
-
-// export const unstable_settings = {
-//   anchor: "(tabs)",
-// };
-
-// export default function RootLayout() {
-//   const colorScheme = useColorScheme();
-
-//   return (
-//       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-//         <Stack>
-//           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-//           <Stack.Screen
-//             name="modal"
-//             options={{ presentation: "modal", title: "Modal" }}
-//           />
-//         </Stack>
-//         <StatusBar style="auto" />
-//       </ThemeProvider>
-//   );
-// }

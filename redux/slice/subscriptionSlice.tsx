@@ -2,7 +2,7 @@ import { apiRequest } from "@/apiInstance";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export const getSubscriptionList = createAsyncThunk(
-  "support/getSubscriptionList",
+  "subscription/getSubscriptionList",
   async (
     { page = 1, limit }: { page?: number; limit?: number },
     { rejectWithValue },
@@ -15,31 +15,53 @@ export const getSubscriptionList = createAsyncThunk(
         auth: true,
       });
 
-      return data;
+      return {
+        records: data.records,
+        total: data.total,
+        page: page,
+      };
     } catch (error: any) {
       return rejectWithValue(error?.message || "Failed to fetch subscription");
     }
   },
 );
 
+interface SubscriptionState {
+  subscription: any[];
+  loading: boolean;
+  totalCount: number;
+}
+
+const initialState: SubscriptionState = {
+  subscription: [],
+  loading: false,
+  totalCount: 0,
+};
+
 const subscriptionSlice = createSlice({
   name: "subscription",
-  initialState: {
-    subscription: [],
-    loading: false,
-  },
+  initialState,
   reducers: {},
 
   extraReducers: (builder) => {
     builder
-
       .addCase(getSubscriptionList.pending, (state) => {
         state.loading = true;
       })
 
       .addCase(getSubscriptionList.fulfilled, (state, action) => {
         state.loading = false;
-        state.subscription = action.payload.records;
+
+        const { records, total, page } = action.payload;
+
+        if (page === 1) {
+          state.subscription = records;
+        } else {
+          // ➕ append
+          state.subscription = [...state.subscription, ...records];
+        }
+
+        state.totalCount = total;
       })
 
       .addCase(getSubscriptionList.rejected, (state) => {

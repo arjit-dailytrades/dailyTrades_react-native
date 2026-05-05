@@ -1,6 +1,7 @@
+import NoData from "@/components/common/no-data/No-data";
 import PageHeader from "@/components/common/PageHeader";
 import { SubscriptionCard } from "@/components/subscription/subscription-card";
-import SubscriptionFilters from "@/components/subscription/subsctiption-filter";
+import SubscriptionFilters from "@/components/subscription/subscription-filter";
 import { getSubscriptionList } from "@/redux/slice/subscriptionSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -20,7 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 const PAGE_SIZE = 10;
 
-// ─── Skeleton Card ───────────────────────────────────────────────────────────
+//  Skeleton Card
 function SkeletonCard() {
   const shimmer = useRef(new Animated.Value(0)).current;
 
@@ -58,22 +59,9 @@ function SkeletonCard() {
   );
 }
 
-// ─── Empty State ──────────────────────────────────────────────────────────────
-function EmptyState() {
-  return (
-    <View style={styles.emptyContainer}>
-      <Text style={styles.emptyIcon}>📭</Text>
-      <Text style={styles.emptyTitle}>No Subscriptions Found</Text>
-      <Text style={styles.emptySubtitle}>
-        Try adjusting your filters or search term.
-      </Text>
-    </View>
-  );
-}
-
-// ─── Main Screen ──────────────────────────────────────────────────────────────
+//  Main Screen
 export default function Subscription() {
-  const { subscription, loading } = useSelector(
+  const { subscription, loading, totalCount } = useSelector(
     (state: RootState) => state.subscription,
   );
   const dispatch = useDispatch<AppDispatch>();
@@ -81,46 +69,39 @@ export default function Subscription() {
   const isDark = colorScheme === "dark";
   const [activeFilter, setActiveFilter] = useState("");
   const [searchText, setSearchText] = useState("");
-  const [isExpired, setIsExpired] = useState(false);
   const [page, setPage] = useState<number>(1);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
   const isFirstLoad = useRef(true);
 
   useEffect(() => {
-    dispatch(getSubscriptionList({ page, limit: PAGE_SIZE })).then(
-      (action: any) => {
-        const items = action?.payload?.data ?? [];
-        if (items.length < PAGE_SIZE) setHasMore(false);
-        setLoadingMore(false);
-        setRefreshing(false);
-        isFirstLoad.current = false;
-      },
-    );
-  }, [dispatch, page]);
+    dispatch(getSubscriptionList({ page, limit: PAGE_SIZE })).finally(() => {
+      setLoadingMore(false);
+      setRefreshing(false);
+      isFirstLoad.current = false;
+    });
+  }, [page, dispatch]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setHasMore(true);
+
     if (page === 1) {
-      dispatch(getSubscriptionList({ page: 1, limit: PAGE_SIZE })).then(
-        (action: any) => {
-          const items = action?.payload?.data ?? [];
-          if (items.length < PAGE_SIZE) setHasMore(false);
-          setRefreshing(false);
-        },
+      dispatch(getSubscriptionList({ page: 1, limit: PAGE_SIZE })).finally(() =>
+        setRefreshing(false),
       );
     } else {
       setPage(1);
     }
-  }, [dispatch, page]);
+  }, [page, dispatch]);
 
   const onEndReached = useCallback(() => {
+    const hasMore = subscription.length < (totalCount || 0);
+
     if (loadingMore || !hasMore || loading) return;
+
     setLoadingMore(true);
     setPage((prev) => prev + 1);
-  }, [loadingMore, hasMore, loading]);
+  }, [loadingMore, subscription.length, totalCount, loading]);
 
   const filteredData = (subscription ?? []).filter((item: any) => {
     const matchesFilter = activeFilter
@@ -142,6 +123,8 @@ export default function Subscription() {
   );
 
   const renderFooter = () => {
+    const hasMore = subscription.length < (totalCount || 0);
+
     if (loadingMore) {
       return (
         <View style={styles.footerLoader}>
@@ -150,6 +133,7 @@ export default function Subscription() {
         </View>
       );
     }
+
     if (!hasMore && filteredData.length > 0) {
       return (
         <View style={styles.footerEnd}>
@@ -159,6 +143,7 @@ export default function Subscription() {
         </View>
       );
     }
+
     return <View style={styles.footerSpacer} />;
   };
 
@@ -182,7 +167,7 @@ export default function Subscription() {
   }
 
   const theme = {
-    bg: isDark ? "#060B1A" : "#F3F4F6",
+    bg: isDark ? "#010D26" : "#ffffff",
     card: isDark ? "#1E293B" : "#FFFFFF",
     text: isDark ? "#FFFFFF" : "#1A2138",
     subText: isDark ? "#9CA3AF" : "#666",
@@ -197,7 +182,14 @@ export default function Subscription() {
         data={filteredData}
         keyExtractor={(item: any) => item._id?.toString()}
         ListHeaderComponent={renderHeader}
-        ListEmptyComponent={!loading ? <EmptyState /> : null}
+        ListEmptyComponent={
+          !loading && !isFirstLoad.current ? (
+            <NoData
+              title="No subscription found."
+              subTitle="We couldn't find any records.."
+            />
+          ) : null
+        }
         ListFooterComponent={renderFooter}
         contentContainerStyle={
           filteredData.length === 0

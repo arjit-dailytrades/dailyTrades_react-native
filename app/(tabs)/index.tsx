@@ -2,7 +2,6 @@ import AppHeader from "@/components/AppHeader";
 import ConnectBrokerCard from "@/components/broker/ConnectBroker";
 import TradeCard from "@/components/trade/TradeCard";
 import TradeFilters from "@/components/trade/TradeFilter";
-import UnlockTradeModal from "@/components/UnlockTradeModal";
 import { fetchExpertDetail } from "@/redux/slice/expertSlice";
 import {
   fetchCanOpenScript,
@@ -24,7 +23,7 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
-// ─── Stable ListHeader (never causes scroll glitch) ─────────────────────────
+//  Stable ListHeader (never causes scroll glitch)
 const ListHeader = ({
   typeOptions,
   segmentOptions,
@@ -57,7 +56,7 @@ const ListHeader = ({
   </View>
 );
 
-// ─── Stable ListFooter ───────────────────────────────────────────────────────
+//  Stable ListFooter
 const ListFooter = ({
   loading,
   hasMore,
@@ -331,14 +330,14 @@ export default function HomeScreen() {
         contentContainerStyle={styles.listContent}
       />
 
-      <UnlockTradeModal
+      {/* <UnlockTradeModal
         visible={modalVisible}
         trade={selectedTrade}
         advisor={advisor}
         onClose={closeUnlockModal}
         handleSelectPlan={handleSelectPlan}
         selectedPlan={selectedPlan}
-      />
+      /> */}
     </View>
   );
 }

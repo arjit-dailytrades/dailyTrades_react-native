@@ -1,12 +1,14 @@
 import PageHeader from "@/components/common/PageHeader";
+import SupportCard from "@/components/support/SupportCard";
 import SupportDetailModal from "@/components/support/SupportDetailModal";
 import SupportForm from "@/components/support/SupportForm";
 import { getSupportList } from "@/redux/slice/supportSlice";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
+  RefreshControl,
   StatusBar,
   StyleSheet,
   Text,
@@ -21,20 +23,48 @@ export default function Support() {
   const [openForm, setOpenForm] = useState(false);
   const [isDetailVisible, setDetailVisible] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState({});
+  const [page, setPage] = useState(1);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
 
-  const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  const { supports, loading } = useSelector((state: any) => state.support);
+  const { supports, loading, totalCount } = useSelector(
+    (state: any) => state.support,
+  );
   const handleViewDetails = (ticket: any) => {
     setDetailVisible(true);
     setSelectedTicket(ticket);
   };
+
+  const fetchSupport = async (pageNum: number, isLoadMore = false) => {
+    if (!isLoadMore) setPage(1);
+
+    await dispatch(getSupportList({ page: pageNum }) as any);
+
+    setRefreshing(false);
+    setLoadingMore(false);
+  };
   useEffect(() => {
-    dispatch(getSupportList({ page: 1 }) as any);
+    fetchSupport(1);
   }, []);
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchSupport(1);
+  };
+  const onEndReached = () => {
+    const hasMore = supports.length < (totalCount || 0);
+
+    if (loadingMore || loading || !hasMore) return;
+
+    const nextPage = page + 1;
+    setPage(nextPage);
+    setLoadingMore(true);
+
+    fetchSupport(nextPage, true);
+  };
   const colors = {
     bg: isDark ? "#010D26" : "#ffffff",
     card: isDark ? "#161B2C" : "#FFFFFF",
@@ -50,85 +80,10 @@ export default function Support() {
     warning: "#F59E0B",
   };
 
-  const renderItem = ({ item }: any) => {
-    const statusColor =
-      item.status === "RESOLVED"
-        ? colors.success
-        : item.status === "PENDING"
-          ? colors.warning
-          : colors.primary;
-
-    return (
-      <View
-        style={[
-          styles.card,
-          { backgroundColor: colors.card, borderColor: colors.border },
-        ]}
-      >
-        <View style={styles.cardHeader}>
-          {/* Title with Truncation */}
-          <Text
-            style={[styles.title, { color: colors.text }]}
-            numberOfLines={1}
-          >
-            {item.title}
-          </Text>
-
-          {/* Status instead of Open button */}
-          <View
-            style={[
-              styles.statusBadge,
-              { backgroundColor: `${statusColor}20` },
-            ]}
-          >
-            <View
-              style={[styles.statusDot, { backgroundColor: statusColor }]}
-            />
-            <Text style={[styles.statusText, { color: statusColor }]}>
-              {item.status || "Pending"}
-            </Text>
-          </View>
-        </View>
-
-        {/* Comment with Truncation (...) */}
-        <Text
-          style={[styles.comment, { color: colors.subtext }]}
-          numberOfLines={2}
-        >
-          {item.userComment}
-        </Text>
-
-        <View style={styles.cardFooter}>
-          <View style={styles.dateRow}>
-            <Ionicons
-              name="calendar-outline"
-              size={14}
-              color={colors.subtext}
-            />
-            <Text style={[styles.date, { color: colors.subtext }]}>
-              {new Date(item.createdAt).toLocaleDateString()}
-            </Text>
-          </View>
-
-          {/* Arrow Icon triggers Form/Action */}
-          <TouchableOpacity
-            onPress={() => handleViewDetails(item)}
-            style={[
-              styles.arrowCircle,
-              { backgroundColor: `${colors.primary}10` },
-            ]}
-          >
-            <Ionicons name="arrow-forward" size={18} color={colors.primary} />
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
-
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]}>
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
-      <PageHeader title="Help & Support" />
+      <PageHeader title="Help & Support" showBack={true} />
 
       <View style={styles.hero}>
         <TouchableOpacity
@@ -141,11 +96,25 @@ export default function Support() {
       </View>
 
       <FlatList
-        data={supports?.records || []}
+        data={supports}
         keyExtractor={(item) => item.id}
-        renderItem={renderItem}
+        renderItem={({ item }) => (
+          <SupportCard
+            item={item}
+            colors={colors}
+            onPress={() => handleViewDetails(item)}
+          />
+        )}
         contentContainerStyle={styles.listPadding}
         showsVerticalScrollIndicator={false}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.3}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ListFooterComponent={
+          loadingMore ? <ActivityIndicator size="small" /> : null
+        }
       />
 
       <SupportForm

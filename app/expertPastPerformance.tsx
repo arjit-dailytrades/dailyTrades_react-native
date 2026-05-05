@@ -280,7 +280,7 @@ import {
   FlatList,
   StyleSheet,
   useColorScheme,
-  View
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
@@ -440,7 +440,7 @@ export default function ExpertPerformance() {
           <View style={styles.emptyContainer}>
             <NoData
               title="No Performance Data"
-              msg="We couldn't find any records for the selected filters."
+              subTitle="We couldn't find any records for the selected filters."
             />
           </View>
         );

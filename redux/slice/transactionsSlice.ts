@@ -23,7 +23,6 @@ export const getTransactionList = createAsyncThunk(
         source = "ALL",
       } = params;
 
-      // Build query dynamically
       const query = new URLSearchParams({
         page: String(page),
         limit: String(limit),
@@ -39,7 +38,11 @@ export const getTransactionList = createAsyncThunk(
         auth: true,
       });
 
-      return data;
+      return {
+        records: data.records,
+        total: data.total,
+        page: data.page,
+      };
     } catch (error: any) {
       return rejectWithValue(error?.message || "Failed to fetch transactions");
     }
@@ -74,9 +77,20 @@ const transactionSlice = createSlice({
       })
       .addCase(getTransactionList.fulfilled, (state, action) => {
         state.loading = false;
-        state.transaction = action.payload.records;
-        state.totalCount = action.payload.total;
+
+        const { records, total, page } = action.payload;
+
+        if (page === 1) {
+          // Refresh / first load
+          state.transaction = records;
+        } else {
+          // Load more
+          state.transaction = [...state.transaction, ...records];
+        }
+
+        state.totalCount = total;
       })
+
       .addCase(getTransactionList.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;

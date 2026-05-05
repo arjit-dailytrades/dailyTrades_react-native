@@ -12,9 +12,12 @@ export const getSupportList = createAsyncThunk(
         method: "GET",
         auth: true,
       });
-      console.log(data, "=========supportdata");
 
-      return data;
+      return {
+        records: data.records,
+        total: data.total,
+        page: data.page,
+      };
     } catch (error: any) {
       return rejectWithValue(error?.message || "Failed to fetch supports");
     }
@@ -54,12 +57,21 @@ export const createSupport = createAsyncThunk(
   },
 );
 
+type SupportState = {
+  supports: any[];
+  loading: boolean;
+  totalCount: number;
+};
+
+const initialState: SupportState = {
+  supports: [],
+  loading: false,
+  totalCount: 0,
+};
+
 const supportSlice = createSlice({
   name: "support",
-  initialState: {
-    supports: [],
-    loading: false,
-  },
+  initialState,
   reducers: {},
 
   extraReducers: (builder) => {
@@ -71,7 +83,18 @@ const supportSlice = createSlice({
 
       .addCase(getSupportList.fulfilled, (state, action) => {
         state.loading = false;
-        state.supports = action.payload;
+
+        const { records, total, page } = action.payload;
+
+        if (page === 1) {
+          // refresh / first load
+          state.supports = records;
+        } else {
+          // load more
+          state.supports = [...state.supports, ...records];
+        }
+
+        state.totalCount = total;
       })
 
       .addCase(getSupportList.rejected, (state) => {

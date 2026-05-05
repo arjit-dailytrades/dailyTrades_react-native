@@ -14,7 +14,7 @@ export const initWebsocket = (user: any) => {
   dlnvWS = new WebSocket(WSurl);
 
   dlnvWS.onopen = () => {
-    console.log("WebSocket Connected");
+    // console.log("WebSocket Connected");
   };
 
   dlnvWS.onmessage = (evt) => {
@@ -48,7 +48,7 @@ export const initWebsocket = (user: any) => {
   };
 
   dlnvWS.onclose = () => {
-    console.log("WebSocket Closed");
+    // console.log("WebSocket Closed");
 
     dlnvWS = null;
 
