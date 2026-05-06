@@ -1,3 +1,5 @@
+import CommonButton from "@/components/common/CommonButton";
+import GlowButton from "@/components/common/GlowButton";
 import PageHeader from "@/components/common/PageHeader";
 import OptionCard from "@/components/riskProfile/optionCard";
 import { useAppTheme } from "@/hooks/use-app-theme";
@@ -6,23 +8,15 @@ import { AppDispatch, RootState } from "@/redux/store";
 import { Image } from "expo-image";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-
-interface OptionProps {
-  label: string;
-  description: string;
-  selected: boolean;
-  onPress: () => void;
-}
 
 const KYCQuizScreen: React.FC = () => {
   const theme = useAppTheme();
@@ -77,33 +71,25 @@ const KYCQuizScreen: React.FC = () => {
   const handleBack = () => {
     if (!isFirst) setCurrentSection((prev) => prev - 1);
   };
+  console.log(questions, "==========questionsddd");
 
   if (isLoading) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <StatusBar barStyle="light-content" backgroundColor="#0d1829" />
         <View style={styles.centeredView}>
-          <ActivityIndicator size="large" color={BLUE} />
+          <ActivityIndicator size="large" />
         </View>
       </SafeAreaView>
     );
   }
 
-  if (!questions?.length || !section) {
+  if (!section) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <StatusBar barStyle="light-content" backgroundColor="#0d1829" />
         <View style={styles.centeredView}>
-          <Text style={styles.emptyText}>No questions available.</Text>
-          <TouchableOpacity
-            style={styles.retryBtn}
-            onPress={() => {
-              dispatch(getQuestions());
-              dispatch(getAnswer());
-            }}
-          >
-            <Text style={styles.retryBtnText}>Retry</Text>
-          </TouchableOpacity>
+          <Text style={{ color: "#fff" }}>No questions available.</Text>
         </View>
       </SafeAreaView>
     );
@@ -120,32 +106,41 @@ const KYCQuizScreen: React.FC = () => {
           contentFit="cover"
         />
       </View>
-      <View style={styles.header}>
-        <View style={styles.header_content}>
-          <Text style={styles.sectionTitle}>{section.title}</Text>
-          <Text style={styles.sectionDesc}>{section.description}</Text>
-          {/* <Text style={styles.questionText}>
-            Note: All questions are mandatory!
-          </Text> */}
-          <Text style={styles.sectionMeta}>
-            Section {currentSection + 1} of {totalSections}
-          </Text>
-        </View>
-      </View>
 
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {section.questions.map((question: any, qIndex: number) => {
-          const selectedValue = localAnswers[section.id]?.[question.id];
-          const useOneColumn = question.options.length <= 3;
+        <View style={[styles.header]}>
+          <View
+            style={[
+              styles.header_content,
+              { backgroundColor: theme.cardBg, borderColor: theme.borderColor },
+            ]}
+          >
+            <Text style={[styles.sectionTitle, { color: theme.textColor }]}>
+              {section?.title}
+            </Text>
+            <Text style={[styles.sectionDesc, { color: theme.subText }]}>
+              {section?.description}
+            </Text>
+            {/* <Text style={styles.questionText}>
+            Note: All questions are mandatory!
+          </Text> */}
+            {/* <Text style={styles.sectionMeta}>
+              Section {currentSection + 1} of {totalSections}
+            </Text> */}
+          </View>
+        </View>
+        {section?.questions?.map((question: any, qIndex: number) => {
+          const selectedValue = localAnswers[section?.id]?.[question?.id];
+          const useOneColumn = question?.options?.length <= 3;
 
           return (
-            <View key={question.id} style={styles.questionBlock}>
+            <View key={question?.id} style={styles.questionBlock}>
               <Text style={styles.questionText}>
-                {qIndex + 1}. {question.text}
+                {qIndex + 1}. {question?.text}
               </Text>
 
               <View
@@ -154,9 +149,9 @@ const KYCQuizScreen: React.FC = () => {
                   useOneColumn && styles.optionsGridSingle,
                 ]}
               >
-                {question.options.map((option: any) => (
+                {question?.options?.map((option: any) => (
                   <View
-                    key={option.value}
+                    key={option?.value}
                     style={
                       useOneColumn
                         ? styles.optionWrapFull
@@ -164,11 +159,11 @@ const KYCQuizScreen: React.FC = () => {
                     }
                   >
                     <OptionCard
-                      label={option.displayValue ?? option.label}
-                      description={option.description}
-                      selected={selectedValue === option.value}
+                      label={option?.displayValue ?? option?.label}
+                      description={option?.description}
+                      selected={selectedValue === option?.value}
                       onPress={() =>
-                        handleSelect(section.id, question.id, option.value)
+                        handleSelect(section?.id, question?.id, option?.value)
                       }
                       disabled={false}
                     />
@@ -179,36 +174,24 @@ const KYCQuizScreen: React.FC = () => {
           );
         })}
 
-        <View style={{ height: 20 }} />
+        <View style={styles.footer}>
+          {!isFirst && (
+            <CommonButton
+              title="Back"
+              handleClick={handleBack}
+              buttonWidth={"50%"}
+            />
+          )}
+          <GlowButton
+            title={isLast ? "Submit" : "Next"}
+            buttonWidth={"50%"}
+            handleClick={handleNext}
+          />
+        </View>
       </ScrollView>
-
-      <View style={styles.footer}>
-        {!isFirst && (
-          <TouchableOpacity
-            style={styles.btnBack}
-            onPress={handleBack}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.btnBackText}>Back</Text>
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity
-          style={[styles.btnNext, isFirst && styles.btnNextFull]}
-          onPress={handleNext}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.btnNextText}>{isLast ? "Submit" : "Next"}</Text>
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 };
-
-const BLUE = "#4f9cf9";
-const CARD_BG = "rgba(255,255,255,0.05)";
-const CARD_BORDER = "rgba(255,255,255,0.12)";
-const CARD_SELECTED_BG = "rgba(79,156,249,0.12)";
-const DIVIDER = "rgba(255,255,255,0.08)";
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -223,31 +206,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 12,
   },
-  loadingText: {
-    fontSize: 14,
-    color: "rgba(255,255,255,0.45)",
-    marginTop: 8,
-  },
-  emptyText: {
-    fontSize: 15,
-    color: "rgba(255,255,255,0.5)",
-  },
-  retryBtn: {
-    marginTop: 8,
-    paddingHorizontal: 24,
-    paddingVertical: 10,
-    borderRadius: 10,
-    backgroundColor: BLUE,
-  },
-  retryBtnText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#fff",
-  },
 
   // Header
   header: {
-    padding: 16,
+    marginBottom: 20,
   },
   header_content: {
     borderWidth: 1,
@@ -265,13 +227,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#ffffff",
     lineHeight: 24,
     marginBottom: 4,
   },
   sectionDesc: {
     fontSize: 12,
-    color: "rgba(255,255,255,0.42)",
     lineHeight: 17,
   },
 
@@ -313,10 +273,8 @@ const styles = StyleSheet.create({
   // Footer
   footer: {
     flexDirection: "row",
+    justifyContent: "center",
     paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderTopWidth: 0.5,
-    borderTopColor: DIVIDER,
     gap: 10,
   },
   btnBack: {
@@ -338,7 +296,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     borderRadius: 12,
-    backgroundColor: BLUE,
     alignItems: "center",
     justifyContent: "center",
   },

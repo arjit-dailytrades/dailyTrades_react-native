@@ -1,6 +1,6 @@
 export const lightTheme = {
   bg: "#ffffff",
-  cardBg: "#ffffff",
+  cardBg: "",
   boxBg: "#f8f9fa",
   textColor: "#ffffff",
   subText: "#ffffff",
@@ -10,11 +10,12 @@ export const lightTheme = {
   detailBg: "#87868617",
   chatBtnBorder: "#000000",
   valColor: "#00000080",
+  primary: "",
 };
 
 export const darkTheme = {
   bg: "#010D26",
-  cardBg: "#FFFFFF1A",
+  cardBg: "#FFFFFF0D",
   boxBg: "#FFFFFF0D",
   textColor: "#ffffff",
   subText: "#FFFFFF80",
@@ -24,4 +25,5 @@ export const darkTheme = {
   detailBg: "#FFFFFF0F",
   chatBtnBorder: "#FFFFFF33",
   valColor: "#FFFFFF80",
+  primary: "",
 };

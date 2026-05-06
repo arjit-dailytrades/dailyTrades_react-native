@@ -16,7 +16,7 @@ const NoData = ({
   const theme = useAppTheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.bg }]}>
+    <View style={[styles.container]}>
       <Image
         source={require("../../../assets/images/not_found.png")}
         contentFit="contain"

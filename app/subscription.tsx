@@ -4,6 +4,7 @@ import { SubscriptionCard } from "@/components/subscription/subscription-card";
 import SubscriptionFilters from "@/components/subscription/subscription-filter";
 import { getSubscriptionList } from "@/redux/slice/subscriptionSlice";
 import { AppDispatch, RootState } from "@/redux/store";
+import { Image } from "expo-image";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -175,8 +176,15 @@ export default function Subscription() {
   };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <Image
+          source={require("../assets/images/topBG.png")}
+          style={styles.bgImage}
+          contentFit="cover"
+        />
+      </View>
       <StatusBar barStyle="light-content" />
-      <PageHeader title="Subscription" />
+      <PageHeader title="My Subscription" />
 
       <FlatList
         data={filteredData}
@@ -221,6 +229,9 @@ export default function Subscription() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "transparent" },
+  bgImage: {
+    ...StyleSheet.absoluteFillObject,
+  },
 
   listContent: { paddingHorizontal: 16, paddingBottom: 32 },
   listContentEmpty: {

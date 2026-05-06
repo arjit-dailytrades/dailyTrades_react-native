@@ -1,5 +1,5 @@
 import { apiRequest } from "@/apiInstance";
-import { showSuccess } from "@/utils/toast";
+import { showError, showSuccess } from "@/utils/toast";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import * as FileSystem from "expo-file-system";
@@ -22,7 +22,6 @@ export const fetchExpert = createAsyncThunk(
       const queryString = new URLSearchParams(query).toString();
 
       const endpoint = `/advisor/list?${queryString}`;
-      console.log("endPoint:", endpoint);
 
       const data = await apiRequest(endpoint, {
         method: "GET",
@@ -57,12 +56,22 @@ export const toggleFavoriteAdvisor = createAsyncThunk(
         auth: true,
         body: { id },
       });
+
+      if (!response) {
+        throw new Error("Failed to update favorite");
+      }
+
       showSuccess(isFavorite ? "Removed from favorites" : "Added to favorites");
-      if (!response) throw new Error("Failed to update favorite");
 
       return { id, isFavorite: !isFavorite };
     } catch (err: any) {
-      return rejectWithValue(err?.message || "Something went wrong");
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to update favorite";
+      showError(message);
+
+      return rejectWithValue(message);
     }
   },
 );
@@ -82,12 +91,20 @@ export const toggleFollowAdvisor = createAsyncThunk(
         auth: true,
         body: { id },
       });
-      showSuccess(isFollow ? "Removed from follow" : "Added to follow");
+
       if (!response) throw new Error("Failed to update follow");
+
+      showSuccess(isFollow ? "Unfollowed advisor" : "Followed advisor");
 
       return { id, isFollow: !isFollow };
     } catch (err: any) {
-      return rejectWithValue(err?.message || "Something went wrong");
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to update favorite";
+      showError(message);
+
+      return rejectWithValue(message);
     }
   },
 );
@@ -210,6 +227,44 @@ export const downloadResearchReport = createAsyncThunk(
     }
   },
 );
+
+export const fetchFavoriteAdvisor = createAsyncThunk(
+  "advisor/fetchFavoriteAdvisor",
+  async (_, { rejectWithValue }) => {
+    try {
+      const endpoint = `/advisor/list-favorite`;
+
+      const data = await apiRequest(endpoint, {
+        method: "GET",
+        auth: true,
+      });
+      console.log(data, "favorite===================");
+
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error?.message || "Failed to fetch advisors");
+    }
+  },
+);
+
+export const fetchFollowingAdvisor = createAsyncThunk(
+  "advisor/fetchFollowingAdvisor",
+  async (_, { rejectWithValue }) => {
+    try {
+      const endpoint = `/advisor/list-followed`;
+
+      const data = await apiRequest(endpoint, {
+        method: "GET",
+        auth: true,
+      });
+      console.log(data, "following===================");
+
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error?.message || "Failed to fetch advisors");
+    }
+  },
+);
 // types
 interface AdvisorState {
   experts: any;
@@ -226,6 +281,8 @@ interface AdvisorState {
   fileUri: string;
   isFollowLoading: boolean;
   isFavoriteLoading: boolean;
+  favoriteAdvisor: any;
+  followingAdvisor: any;
 }
 
 const initialState: AdvisorState = {
@@ -243,10 +300,12 @@ const initialState: AdvisorState = {
   fileUri: "",
   isFollowLoading: false,
   isFavoriteLoading: false,
+  favoriteAdvisor: [],
+  followingAdvisor: [],
 };
 
 const advisorSlice = createSlice({
-  name: "advisor",
+  name: "expert",
   initialState,
   reducers: {
     resetAdvisorDetail: (state) => {
@@ -342,20 +401,64 @@ const advisorSlice = createSlice({
       })
       .addCase(toggleFavoriteAdvisor.fulfilled, (state, action) => {
         state.isFavoriteLoading = false;
+
+        const { id, isFavorite } = action.payload;
+
+        if (!state.experts?.records) return;
+
+        state.experts.records = state.experts.records.map((advisor: any) =>
+          advisor.id === id ? { ...advisor, favorite: isFavorite } : advisor,
+        );
       })
       .addCase(toggleFavoriteAdvisor.rejected, (state, action: any) => {
         state.isFavoriteLoading = false;
         state.error = action.payload;
       })
       // follow
-      .addCase(toggleFollowAdvisor.pending, (state) => {
+      .addCase(toggleFollowAdvisor.pending, (state, action) => {
+        state.isFollowLoading = true;
+
+        // Optimistic update (instant UI)
+        const { id, isFollow } = action.meta.arg;
+
+        if (!state.experts?.records) return;
+
+        state.experts.records = state.experts.records.map((advisor: any) =>
+          advisor.id === id ? { ...advisor, follow: !isFollow } : advisor,
+        );
+      })
+
+      .addCase(toggleFollowAdvisor.fulfilled, (state) => {
+        state.isFollowLoading = false;
+      })
+
+      .addCase(toggleFollowAdvisor.rejected, (state, action: any) => {
+        state.isFollowLoading = false;
+        state.error = action.payload;
+      })
+      // favorite
+      .addCase(fetchFavoriteAdvisor.pending, (state) => {
+        state.isFavoriteLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchFavoriteAdvisor.fulfilled, (state, action) => {
+        state.isFavoriteLoading = false;
+        state.favoriteAdvisor = action.payload;
+      })
+      .addCase(fetchFavoriteAdvisor.rejected, (state, action: any) => {
+        state.isFavoriteLoading = false;
+        state.error = action.payload;
+      })
+      // favorite
+      .addCase(fetchFollowingAdvisor.pending, (state) => {
         state.isFollowLoading = true;
         state.error = null;
       })
-      .addCase(toggleFollowAdvisor.fulfilled, (state, action) => {
+      .addCase(fetchFollowingAdvisor.fulfilled, (state, action) => {
         state.isFollowLoading = false;
+        state.followingAdvisor = action.payload;
       })
-      .addCase(toggleFollowAdvisor.rejected, (state, action: any) => {
+      .addCase(fetchFollowingAdvisor.rejected, (state, action: any) => {
         state.isFollowLoading = false;
         state.error = action.payload;
       });

@@ -68,8 +68,8 @@ const styles = StyleSheet.create({
   glowWrapper: {
     shadowColor: "#5aa0ff",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.6,
-    shadowRadius: 20,
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
     alignSelf: "center",
   },
 

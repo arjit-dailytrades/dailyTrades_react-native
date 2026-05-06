@@ -3,14 +3,15 @@ import { router } from "expo-router";
 import React from "react";
 import {
   Alert,
-  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
   useColorScheme,
   View,
 } from "react-native";
+import AvatarAtom from "../atoms/AvtarAtom";
 import GlowButton from "../common/GlowButton";
+import IconButton from "../common/IconButton";
 
 interface AdvisorMapping {
   [key: string]: string;
@@ -19,9 +20,13 @@ interface AdvisorMapping {
 export default function ExpertCard({
   item,
   handleViewPlans,
+  markUnMarkAsFavorite,
+  followUnFollow,
 }: {
   item: any;
   handleViewPlans: (e: any) => void | undefined;
+  markUnMarkAsFavorite: any;
+  followUnFollow: any;
 }) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -77,7 +82,10 @@ export default function ExpertCard({
       },
     });
   };
+  const firstName = item?.fName;
+  const lastName = item?.lName;
 
+  const name = `${firstName} ${lastName}`.trim();
   return (
     <View
       style={[
@@ -88,14 +96,6 @@ export default function ExpertCard({
       {/* Top Section */}
       <View style={styles.headerRow}>
         <View style={styles.profileSection}>
-          {/* {!item?.dp ? (
-            <Image source={{ uri: item?.dp }} style={styles.avatar} />
-          ) : (
-            <Image
-              source={require("../../assets/images/expert.png")}
-              style={styles.avatar}
-            />
-          )} */}
           <TouchableOpacity onPress={handlePress}>
             <View
               style={[
@@ -111,9 +111,11 @@ export default function ExpertCard({
                 },
               ]}
             >
-              <Image
-                source={require("../../assets/images/expert.png")}
-                style={styles.avatar}
+              <AvatarAtom
+                //   uri={item?.dp }
+                name={name}
+                height={42}
+                width={42}
               />
               {item?.isSubscribed && (
                 <View style={styles.connectedBadge}>
@@ -141,13 +143,20 @@ export default function ExpertCard({
             </View>
           </View>
         </View>
-
-        {/* <View style={styles.callsSection}>
-          <Text style={[styles.callCount, { color: theme.text }]}>20</Text>
-          <Text style={[styles.callLabel, { color: theme.subText }]}>
-            AVG. Calls Monthly
-          </Text>
-        </View> */}
+        <View style={{ flexDirection: "row", gap: 5 }}>
+          <IconButton
+            icon="heart"
+            color={item?.favorite ? "red" : "#cfcfcf"}
+            active={item?.favorite}
+            onPress={() => markUnMarkAsFavorite(item.id, item?.favorite)}
+          />
+          <IconButton
+            icon="user-add"
+            color={item?.follow ? "#0068FF" : "#cfcfcf"}
+            active={item?.follow}
+            onPress={() => followUnFollow(item.id, item?.follow)}
+          />
+        </View>
       </View>
 
       {/* Inner Info Box */}
@@ -250,7 +259,7 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    // alignItems: "center",
     marginBottom: 10,
   },
   profileSection: {
@@ -258,8 +267,8 @@ const styles = StyleSheet.create({
     // alignItems: "center",
   },
   iconWrapper: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     borderRadius: 100,
     justifyContent: "center",
     alignItems: "center",
@@ -267,11 +276,7 @@ const styles = StyleSheet.create({
     position: "relative",
     marginRight: 12,
   },
-  avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
+
   connectedBadge: {
     position: "absolute",
     top: -4,

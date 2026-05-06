@@ -140,7 +140,7 @@ export default function Profile() {
 
             <MenuItem
               icon="card-outline"
-              title="Subscription"
+              title="My Subscription"
               route="/subscription"
               theme={theme}
             />

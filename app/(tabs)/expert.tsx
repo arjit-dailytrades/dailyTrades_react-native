@@ -2,7 +2,12 @@ import AppHeader from "@/components/AppHeader";
 import ViewPlanModal from "@/components/common/ViewPlanModal";
 import ExpertCard from "@/components/expert/ExpertCard";
 import ExpertFilter from "@/components/expert/ExpertFilter";
-import { fetchExpert, fetchSubscriptionPlans } from "@/redux/slice/expertSlice";
+import {
+  fetchExpert,
+  fetchSubscriptionPlans,
+  toggleFavoriteAdvisor,
+  toggleFollowAdvisor,
+} from "@/redux/slice/expertSlice";
 import { RootState } from "@/redux/store";
 import React, { useEffect, useState } from "react";
 import {
@@ -128,6 +133,14 @@ export default function ExpertScreen() {
 
     setRefreshing(false);
   };
+
+  const markUnMarkAsFavorite = (id: string, isFavorite: boolean) => {
+    dispatch(toggleFavoriteAdvisor({ id, isFavorite }));
+  };
+
+  const followUnFollow = (id: string, isFollow: boolean) => {
+    dispatch(toggleFollowAdvisor({ id, isFollow }));
+  };
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       <AppHeader title="Experts" />
@@ -155,7 +168,12 @@ export default function ExpertScreen() {
             item?.id?.toString() || index.toString()
           }
           renderItem={({ item }) => (
-            <ExpertCard item={item} handleViewPlans={handleViewPlans} />
+            <ExpertCard
+              item={item}
+              handleViewPlans={handleViewPlans}
+              markUnMarkAsFavorite={markUnMarkAsFavorite}
+              followUnFollow={followUnFollow}
+            />
           )}
           // ListHeaderComponent={}
           ListFooterComponent={renderFooter}

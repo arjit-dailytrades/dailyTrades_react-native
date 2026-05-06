@@ -239,6 +239,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 12,
     paddingVertical: 10,
+    gap: 10,
   },
   outerRing: {
     width: 44,
@@ -270,7 +271,6 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     flex: 1,
-    alignItems: "center",
   },
   headerTitle: {
     fontSize: 20,

@@ -14,7 +14,7 @@ const UserInfoMolecule = ({ name, source, status, info, theme }: any) => {
 
   return (
     <View style={styles.container}>
-      <AvatarAtom uri={null} name={name} />
+      <AvatarAtom uri={""} name={name} />
 
       <View style={styles.middle}>
         <View style={styles.row}>

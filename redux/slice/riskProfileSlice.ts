@@ -68,6 +68,7 @@ export const getAnswer = createAsyncThunk<QuizAnswers>(
         method: "GET",
         auth: true,
       });
+      console.log(data, "==============riskprofile");
 
       return data;
     } catch (error: any) {

@@ -1,3 +1,4 @@
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { SubscriptionRecord } from "@/types/subscription";
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
@@ -7,6 +8,7 @@ interface SubscriptionCardProps {
 }
 
 export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ item }) => {
+  const theme = useAppTheme();
   const isActive = !item.isExpired;
   const firstLetter = item.advisor.fName?.charAt(0).toUpperCase() || "";
   const lastLetter = item.advisor.lName?.charAt(0).toUpperCase() || "";
@@ -25,7 +27,12 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ item }) => {
   });
 
   return (
-    <View style={styles.outerContainer}>
+    <View
+      style={[
+        styles.outerContainer,
+        { backgroundColor: theme.cardBg, borderColor: theme.borderColor },
+      ]}
+    >
       <View style={styles.headerRow}>
         <View style={styles.userInfo}>
           {!item.advisor.dp ? (
@@ -96,12 +103,10 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ item }) => {
 
 const styles = StyleSheet.create({
   outerContainer: {
-    backgroundColor: "#0f172a",
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#1e293b",
   },
   headerRow: {
     flexDirection: "row",

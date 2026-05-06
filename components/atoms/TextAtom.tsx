@@ -1,14 +1,12 @@
+import { useAppTheme } from "@/hooks/use-app-theme";
 import React from "react";
 import { StyleSheet, Text } from "react-native";
 
 const TextAtom = ({ children, style }: any) => {
-  return <Text style={[styles.text, style]}>{children}</Text>;
+  const theme = useAppTheme();
+  return <Text style={[style, { color: theme.textColor }]}>{children}</Text>;
 };
 
-const styles = StyleSheet.create({
-  text: {
-    color: "#fff",
-  },
-});
+const styles = StyleSheet.create({});
 
 export default TextAtom;

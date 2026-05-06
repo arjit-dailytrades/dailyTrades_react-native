@@ -9,6 +9,7 @@ import {
   View,
   useColorScheme,
 } from "react-native";
+import AvatarAtom from "../atoms/AvtarAtom";
 import CommonButton from "../common/CommonButton";
 import GlowButton from "../common/GlowButton";
 
@@ -180,7 +181,10 @@ const TradeCard = memo(function TradeCard({ item, onUnlock }: any) {
     chatBtnBorder: isDark ? "#FFFFFF33" : "#000",
     valColor: isDark ? "#FFFFFF80" : "#FFFFFF80",
   };
+  const firstName = advisor?.fName;
+  const lastName = advisor?.lName;
 
+  const name = `${firstName} ${lastName}`.trim();
   return (
     <View
       style={[
@@ -191,11 +195,24 @@ const TradeCard = memo(function TradeCard({ item, onUnlock }: any) {
       {/* Header */}
       <View style={styles.cardHeader}>
         <View style={styles.userRow}>
-          <Image
-            source={require("../../assets/images/expert.png")}
-            style={styles.avatar}
-            contentFit="cover"
-          />
+          <View
+            style={[
+              styles.avatar,
+              {
+                backgroundColor: isDark
+                  ? "rgba(255,255,255,0.05)"
+                  : "rgba(0,0,0,0.03)",
+              },
+            ]}
+          >
+            <AvatarAtom
+              //   uri={item?.advisorDetails?.dp}
+              name={name}
+              height={30}
+              width={30}
+            />
+          </View>
+
           <View>
             <View style={styles.advisorProfile}>
               <Text style={[styles.userName, { color: theme.textColor }]}>
@@ -401,11 +418,12 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   avatar: {
-    width: 30,
-    height: 30,
+    width: 40,
+    height: 40,
     borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
-    backgroundColor: "#eee",
   },
   userName: {
     fontSize: 12,
