@@ -204,8 +204,12 @@ export const downloadResearchReport = createAsyncThunk(
 
       const file = new FileSystem.File(FileSystem.Paths.document, fileName);
 
+      if (file.exists) {
+        file.delete();
+      }
+
       await FileSystem.File.downloadFileAsync(
-        `${process.env.API_BASE}/script/${id}/report`,
+        `${process.env.EXPO_PUBLIC_S_TO_S_API_BASE}/script/${id}/report`,
         file,
         {
           headers: {
@@ -213,16 +217,15 @@ export const downloadResearchReport = createAsyncThunk(
           },
         },
       );
+      showSuccess("Report downloaded successfully");
 
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(file.uri);
       }
-      console.log("file:", file);
 
       return file.uri;
     } catch (error: any) {
-      console.log("error", error);
-
+      showError(error?.message || "Failed to download report");
       return rejectWithValue(error?.message || "Failed to download report");
     }
   },
@@ -238,7 +241,6 @@ export const fetchFavoriteAdvisor = createAsyncThunk(
         method: "GET",
         auth: true,
       });
-      console.log(data, "favorite===================");
 
       return data;
     } catch (error: any) {
@@ -257,7 +259,6 @@ export const fetchFollowingAdvisor = createAsyncThunk(
         method: "GET",
         auth: true,
       });
-      console.log(data, "following===================");
 
       return data;
     } catch (error: any) {

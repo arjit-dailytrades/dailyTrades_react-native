@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import agreementReducer from "./slice/agreementSlice";
 import authReducer from "./slice/authSlice";
 import advisorReducer from "./slice/expertSlice";
 import brokerReducer from "./slice/linkBrokerSlice";
@@ -24,6 +25,7 @@ export const store = configureStore({
     subscription: subscriptionReducer,
     transaction: transactionReducer,
     riskProfile: riskProfileReducer,
+    agreement: agreementReducer,
   },
 });
 

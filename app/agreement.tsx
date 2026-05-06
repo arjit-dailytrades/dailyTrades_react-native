@@ -1,9 +1,8 @@
 import PageHeader from "@/components/common/PageHeader";
-import SupportCard from "@/components/support/SupportCard";
-import SupportDetailModal from "@/components/support/SupportDetailModal";
-import SupportForm from "@/components/support/SupportForm";
-import { getSupportList } from "@/redux/slice/supportSlice";
-import { Ionicons } from "@expo/vector-icons";
+import AgreementCard from "@/components/organisms/AgreementCard";
+import { useAppTheme } from "@/hooks/use-app-theme";
+import { getAgreementList } from "@/redux/slice/agreementSlice";
+import { AppDispatch, RootState } from "@/redux/store";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import {
@@ -12,38 +11,28 @@ import {
   RefreshControl,
   StatusBar,
   StyleSheet,
-  Text,
-  TouchableOpacity,
   View,
   useColorScheme,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
-export default function Support() {
-  const [openForm, setOpenForm] = useState(false);
-  const [isDetailVisible, setDetailVisible] = useState(false);
-  const [selectedTicket, setSelectedTicket] = useState({});
+export default function AgreementScreen() {
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const theme = useAppTheme();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
-
-  const dispatch = useDispatch();
-
-  const { supports, loading, totalCount } = useSelector(
-    (state: any) => state.support,
+  const dispatch = useDispatch<AppDispatch>();
+  const { agreement, totalCount, loading } = useSelector(
+    (state: RootState) => state.agreement,
   );
-  const handleViewDetails = (ticket: any) => {
-    setDetailVisible(true);
-    setSelectedTicket(ticket);
-  };
 
   const fetchSupport = async (pageNum: number, isLoadMore = false) => {
     if (!isLoadMore) setPage(1);
 
-    await dispatch(getSupportList({ page: pageNum }) as any);
+    await dispatch(getAgreementList({ page: pageNum }) as any);
 
     setRefreshing(false);
     setLoadingMore(false);
@@ -56,7 +45,7 @@ export default function Support() {
     fetchSupport(1);
   };
   const onEndReached = () => {
-    const hasMore = supports.length < (totalCount || 0);
+    const hasMore = agreement?.length < (totalCount || 0);
 
     if (loadingMore || loading || !hasMore) return;
 
@@ -66,25 +55,13 @@ export default function Support() {
 
     fetchSupport(nextPage, true);
   };
-  const colors = {
-    bg: isDark ? "#010D26" : "#ffffff",
-    card: isDark ? "#161B2C" : "#FFFFFF",
-    text: isDark ? "#FFFFFF" : "#1A2138",
-    subText: isDark ? "#9CA3AF" : "#666",
-    inputBg: isDark ? "#1F2937" : "#FFF",
-    accent: "#3B82F6",
-    border: isDark ? "#374151" : "#E5E7EB",
-    glassBorder: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
-    subtext: isDark ? "#94A3B8" : "#64748B",
-    primary: "#6366F1",
-    success: "#22C55E",
-    warning: "#F59E0B",
-  };
+
+  console.log(agreement, "==========agreement");
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
-      <PageHeader title="Help & Support" showBack={true} />
+      <PageHeader title="Accepted Agreement" showBack={true} />
       <View style={StyleSheet.absoluteFill} pointerEvents="none">
         <Image
           source={require("../assets/images/topBG.png")}
@@ -93,26 +70,10 @@ export default function Support() {
         />
       </View>
 
-      <View style={styles.hero}>
-        <TouchableOpacity
-          style={[styles.addButton, { backgroundColor: colors.primary }]}
-          onPress={() => setOpenForm(true)}
-        >
-          <Ionicons name="add" size={22} color="#fff" />
-          <Text style={styles.addText}>Create Ticket</Text>
-        </TouchableOpacity>
-      </View>
-
       <FlatList
-        data={supports}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <SupportCard
-            item={item}
-            colors={colors}
-            onPress={() => handleViewDetails(item)}
-          />
-        )}
+        data={agreement}
+        keyExtractor={(item) => item?.id}
+        renderItem={({ item }) => <AgreementCard item={item} />}
         contentContainerStyle={styles.listPadding}
         showsVerticalScrollIndicator={false}
         onEndReached={onEndReached}
@@ -123,19 +84,6 @@ export default function Support() {
         ListFooterComponent={
           loadingMore ? <ActivityIndicator size="small" /> : null
         }
-      />
-
-      <SupportForm
-        visible={openForm}
-        onClose={() => {
-          setOpenForm(false);
-          dispatch(getSupportList({ page: 1 }) as any);
-        }}
-      />
-      <SupportDetailModal
-        visible={isDetailVisible}
-        onClose={() => setDetailVisible(false)}
-        data={selectedTicket}
       />
     </SafeAreaView>
   );

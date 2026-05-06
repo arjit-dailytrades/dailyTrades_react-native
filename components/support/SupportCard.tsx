@@ -40,7 +40,7 @@ export default function SupportCard({ item, colors, onPress }: Props) {
         {item.userComment}
       </Text>
 
-      <View style={styles.cardFooter}>
+      <View style={[styles.cardFooter, { borderColor: colors.border }]}>
         <View style={styles.dateRow}>
           <Ionicons name="calendar-outline" size={14} color={colors.subtext} />
           <Text style={[styles.date, { color: colors.subtext }]}>
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.05)",
+    borderStyle: "dashed",
   },
   dateRow: { flexDirection: "row", alignItems: "center" },
   date: { fontSize: 12, fontWeight: "500", marginLeft: 4 },

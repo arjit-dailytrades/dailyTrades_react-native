@@ -13,6 +13,7 @@ import { setUser } from "@/redux/slice/authSlice";
 import { RootState, store } from "@/redux/store";
 import { initWebsocket } from "@/services/socketService";
 import { getUpdatedProfile, isAuthenticated } from "@/utils/auth";
+import { toastConfig } from "@/utils/toastConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
@@ -166,7 +167,7 @@ function AppContent() {
       </View>
 
       <StatusBar style={isDark ? "light" : "dark"} />
-      <Toast />
+      <Toast config={toastConfig} />
     </ThemeProvider>
   );
 }

@@ -1,3 +1,5 @@
+import { downloadResearchReport } from "@/redux/slice/expertSlice";
+import { AppDispatch, RootState } from "@/redux/store";
 import { getLtpData } from "@/services/socketService";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
@@ -9,6 +11,7 @@ import {
   View,
   useColorScheme,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import AvatarAtom from "../atoms/AvtarAtom";
 import CommonButton from "../common/CommonButton";
 import GlowButton from "../common/GlowButton";
@@ -16,6 +19,8 @@ import GlowButton from "../common/GlowButton";
 const TradeCard = memo(function TradeCard({ item, onUnlock }: any) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+  const dispatch = useDispatch<AppDispatch>();
+  const { isDownloading } = useSelector((state: RootState) => state.expert);
 
   const advisor = item.advisor;
   const isFree = item.scriptPriceType === "FREE";
@@ -185,6 +190,7 @@ const TradeCard = memo(function TradeCard({ item, onUnlock }: any) {
   const lastName = advisor?.lName;
 
   const name = `${firstName} ${lastName}`.trim();
+
   return (
     <View
       style={[
@@ -334,7 +340,15 @@ const TradeCard = memo(function TradeCard({ item, onUnlock }: any) {
 
         {/* Action Buttons */}
         <View style={styles.bottom}>
-          <CommonButton title="Research Report" buttonWidth={100} />
+          <CommonButton
+            title={isDownloading ? "Downloading" : "Research Report"}
+            buttonWidth={100}
+            handleClick={() =>
+              dispatch(
+                downloadResearchReport({ id: item.id, advisor, record: item }),
+              )
+            }
+          />
           <GlowButton
             title={
               !item?.openedScript
@@ -504,7 +518,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 18,
     gap: 5,
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
   },
 });

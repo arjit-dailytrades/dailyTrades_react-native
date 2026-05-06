@@ -48,10 +48,10 @@ export const createSupport = createAsyncThunk(
         body: formData,
         auth: true,
       });
-      showSuccess("Support created successfully!");
+      showSuccess("Ticket created successfully!");
       return data;
     } catch (error: any) {
-      showError("Failed to create support");
+      showError(error?.message || "Some thing went be wrong!");
       return rejectWithValue(error?.message || "Failed to create support");
     }
   },
