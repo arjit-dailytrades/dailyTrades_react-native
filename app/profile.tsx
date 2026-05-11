@@ -1,11 +1,13 @@
+import MenuItem from "@/components/common/MenuItem";
 import PageHeader from "@/components/common/PageHeader";
+import TopBackground from "@/components/common/TopBackground";
 import { ThemedText } from "@/components/themed-text";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { getProfile } from "@/redux/slice/profileSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { logOut } from "@/utils/auth";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { router } from "expo-router";
 import { useEffect } from "react";
 import {
   ScrollView,
@@ -13,7 +15,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  useColorScheme,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,38 +22,30 @@ import { useDispatch, useSelector } from "react-redux";
 export default function Profile() {
   const dispatch = useDispatch<AppDispatch>();
 
-  const systemTheme = useColorScheme();
-  const isDark = systemTheme === "dark";
-  const { profile } = useSelector((state: RootState) => state.profile);
+  const theme = useAppTheme();
+
+  const profile = useSelector((state: RootState) => state.profile.profile);
+
   useEffect(() => {
     dispatch(getProfile());
   }, [dispatch]);
 
-  const theme = {
-    bg: isDark ? "#060B1A" : "#F3F4F6",
-    card: isDark ? "rgba(255,255,255,0.05)" : "#FFFFFF",
-    text: isDark ? "#FFFFFF" : "#1A2138",
-    subText: isDark ? "#9CA3AF" : "#666666",
-    border: isDark ? "rgba(255,255,255,0.1)" : "#E5E7EB",
-  };
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
-      {/* <AppHeader title="Profile" /> */}
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <Image
-          source={require("../../assets/images/topBG.png")}
-          style={styles.bgImage}
-          contentFit="cover"
+      <TopBackground />
+
+      <View style={styles.inner}>
+        <PageHeader
+          title=""
+          rightIcon="edit-3"
+          onRightPress={() => console.log("Edit pressed")}
         />
-      </View>
-      <PageHeader
-        title=""
-        rightIcon="edit-3"
-        onRightPress={() => console.log("Edit pressed")}
-      />
-      <View style={[styles.container]}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.profileCard}>
             <Image
               source={{ uri: "https://i.pravatar.cc/150?img=3" }}
@@ -60,15 +53,11 @@ export default function Profile() {
             />
 
             <ThemedText type="title">
-              {profile?.profile?.fName} {profile?.profile?.lName}
+              {profile?.fName} {profile?.lName}
             </ThemedText>
             <ThemedText style={styles.email}>{profile?.email}</ThemedText>
-
-            {/* <TouchableOpacity style={styles.editBtn}>
-              <Ionicons name="create-outline" size={18} color="#fff" />
-              <ThemedText style={styles.editText}>Edit Profile</ThemedText>
-            </TouchableOpacity> */}
           </View>
+
           <Text style={[styles.sectionTitle, { color: theme.subText }]}>
             APPEARANCE
           </Text>
@@ -76,7 +65,7 @@ export default function Profile() {
           <View
             style={[
               styles.itemCard,
-              { backgroundColor: theme.card, borderColor: theme.border },
+              { backgroundColor: theme.cardBg, borderColor: theme.borderColor },
             ]}
           >
             <MenuItem
@@ -109,42 +98,36 @@ export default function Profile() {
               route="/agreement"
               theme={theme}
             />
-
             <MenuItem
               icon="trending-up-outline"
               title="My Trades"
               route="/myTrades"
               theme={theme}
             />
-
             <MenuItem
               icon="bag-handle-outline"
               title="My Orders"
               route="/myOrders"
               theme={theme}
             />
-
             <MenuItem
               icon="diamond-outline"
               title="Premium Tools"
               route="/premiumTools"
               theme={theme}
             />
-
             <MenuItem
               icon="swap-horizontal-outline"
               title="Transactions"
               route="/transactions"
               theme={theme}
             />
-
             <MenuItem
               icon="card-outline"
               title="My Subscription"
               route="/subscription"
               theme={theme}
             />
-
             <MenuItem
               icon="help-circle-outline"
               title="Help & Support"
@@ -161,7 +144,7 @@ export default function Profile() {
           <TouchableOpacity
             style={[
               styles.itemCard,
-              { backgroundColor: theme.card, borderColor: theme.border },
+              { backgroundColor: theme.cardBg, borderColor: theme.borderColor },
             ]}
             onPress={() => logOut()}
           >
@@ -185,37 +168,19 @@ export default function Profile() {
   );
 }
 
-// MenuItem component with theme support
-function MenuItem({ icon, title, route, theme, isLast }: any) {
-  return (
-    <TouchableOpacity
-      style={[
-        styles.menuItem,
-        { borderBottomColor: theme.border, borderBottomWidth: isLast ? 0 : 1 },
-      ]}
-      onPress={() => router.push(route)}
-    >
-      <View style={styles.menuLeft}>
-        <Ionicons name={icon} size={20} color="#6366f1" />
-        <ThemedText style={[styles.menuText, { color: theme.text }]}>
-          {title}
-        </ThemedText>
-      </View>
-      <Ionicons name="chevron-forward" size={18} color={theme.subText} />
-    </TouchableOpacity>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: {
+  inner: {
     flex: 1,
   },
+
+  scrollView: {
+    flex: 1,
+  },
+
   scrollContent: {
-    padding: 10,
+    padding: 16,
   },
-  bgImage: {
-    ...StyleSheet.absoluteFillObject,
-  },
+
   sectionTitle: {
     fontSize: 12,
     fontWeight: "700",
@@ -245,23 +210,10 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
-  editBtn: {
-    flexDirection: "row",
-    backgroundColor: "#6366f1",
-    paddingVertical: 8,
-    paddingHorizontal: 18,
-    borderRadius: 8,
-    marginTop: 12,
-    gap: 6,
-  },
-
-  editText: {
-    color: "#fff",
-  },
   itemCard: {
     borderRadius: 16,
     borderWidth: 1,
-    paddingHorizontal: 4, // Horizontal padding MenuItem ke liye adjust ki gayi
+    paddingHorizontal: 4,
     marginBottom: 10,
     overflow: "hidden",
   },
@@ -279,21 +231,6 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 16,
-    fontWeight: "500",
-  },
-  menuItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 16,
-  },
-  menuLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  menuText: {
-    fontSize: 15,
     fontWeight: "500",
   },
 });

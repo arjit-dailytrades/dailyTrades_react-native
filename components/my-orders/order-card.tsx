@@ -1,45 +1,13 @@
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { format } from "date-fns";
 import React from "react";
-import { StyleSheet, Text, useColorScheme, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-interface OrderCardProps {
-  stockName: string;
-  exchange: string;
-  status: "Success" | "Failed";
-  side: string;
-  entry: string;
-  stopLoss: string;
-  target: string;
-  date: string;
-  time: string;
-}
-
-export const OrderCard: React.FC<OrderCardProps> = ({
-  stockName,
-  exchange,
-  status,
-  side,
-  entry,
-  stopLoss,
-  target,
-  date,
-  time,
-}) => {
-  const isSuccess = status === "Success";
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const theme = {
-    cardBg: isDark ? "transparent" : "#ffffff",
-    boxBg: isDark ? "#FFFFFF0D" : "#f8f9fa",
-    textColor: isDark ? "#ffffff" : "#000000",
-    subText: isDark ? "#fff" : "#000",
-    borderColor: isDark ? "#FFFFFF1A" : "#0D0D0D1A",
-    badgeBgFree: isDark ? "#15397C" : "#d6e3fa",
-    badgeBgPaid: isDark ? "#00ff8c" : "#cefbe6",
-    detailBg: isDark ? "#FFFFFF0F" : "#87868617",
-    chatBtnBorder: isDark ? "#FFFFFF33" : "#000",
-    valColor: isDark ? "#FFFFFF80" : "#FFFFFF80",
-  };
+export const OrderCard = ({ item }: { item: any }) => {
+  const isSuccess = item.status === "Success" || item.status === "SUCCESS";
+  const isBuy = item.side === "BUY";
+  const theme = useAppTheme();
 
   return (
     <View
@@ -48,80 +16,137 @@ export const OrderCard: React.FC<OrderCardProps> = ({
         { backgroundColor: theme.cardBg, borderColor: theme.borderColor },
       ]}
     >
+      {/* Header */}
       <View style={styles.rowBetween}>
         <View style={styles.headerLeft}>
-          <View style={styles.logoPlaceholder}>
-            <Text style={styles.logoText}>{stockName[0]}</Text>
+          <View
+            style={[
+              styles.logoPlaceholder,
+              { backgroundColor: theme.innerBox },
+            ]}
+          >
+            <Text style={[styles.logoText, { color: theme.primary }]}>
+              {item?.symbol[0]}
+            </Text>
           </View>
           <View>
-            <Text style={styles.stockTitle}>{stockName}</Text>
-            <Text style={styles.subText}>{exchange} • Equity</Text>
+            <Text style={[styles.stockTitle, { color: theme.textColor }]}>
+              {item?.symbol}
+            </Text>
+            <Text style={[styles.subText, { color: theme.subText }]}>
+              {item?.exchange} • {item?.instrumentType}
+            </Text>
           </View>
         </View>
+
         <View style={styles.row}>
-          <View style={styles.tagDhan}>
-            <Text style={styles.tagTextDhan}>DHAN</Text>
+          {/* Broker Badge */}
+          <View style={[styles.tagBroker, { backgroundColor: theme.iconBg }]}>
+            <Text style={[styles.tagTextBroker, { color: theme.textColor }]}>
+              {item?.broker}
+            </Text>
           </View>
+
+          {/* Status Badge */}
           <View
             style={[
               styles.tagStatus,
-              { backgroundColor: isSuccess ? "#1b332a" : "#3d1c21" },
+              {
+                backgroundColor: isSuccess
+                  ? theme.badgeBgPaid // green tint
+                  : "rgba(239,68,68,0.15)", // red tint works on both themes
+              },
             ]}
           >
             <Text
               style={[
                 styles.statusText,
-                { color: isSuccess ? "#4ade80" : "#f87171" },
+                { color: isSuccess ? theme.success : "#ef4444" },
               ]}
             >
-              {status}
+              {item?.status}
             </Text>
           </View>
         </View>
       </View>
 
-      <View style={styles.divider} />
+      <View style={[styles.divider, { backgroundColor: theme.borderColor }]} />
 
+      {/* Side & Entry */}
       <View style={styles.detailsGrid}>
         <View>
-          <Text style={styles.label}>Side</Text>
-          <View style={styles.buyBadge}>
-            <Text style={styles.buyText}>{side}</Text>
+          <Text style={[styles.label, { color: theme.subText }]}>Side</Text>
+          <View
+            style={[
+              styles.badge,
+              {
+                backgroundColor: isBuy
+                  ? "rgba(34,197,94,0.15)"
+                  : "rgba(239,68,68,0.15)",
+              },
+            ]}
+          >
+            <Text
+              style={[
+                styles.badgeText,
+                { color: isBuy ? theme.success : "#ef4444" },
+              ]}
+            >
+              {item?.side}
+            </Text>
           </View>
         </View>
+
         <View style={{ alignItems: "flex-end" }}>
-          <Text style={styles.label}>Entry</Text>
-          <View style={styles.marketBadge}>
-            <Text style={styles.marketText}>{entry}</Text>
+          <Text style={[styles.label, { color: theme.subText }]}>Entry</Text>
+          <View style={[styles.badge, { backgroundColor: theme.innerBox }]}>
+            <Text style={[styles.badgeText, { color: theme.valColor }]}>
+              {item?.entryType}
+            </Text>
           </View>
         </View>
       </View>
 
+      {/* Stop Loss & Target */}
       <View style={[styles.detailsGrid, { marginTop: 12 }]}>
         <View>
-          <Text style={styles.label}>Stop Loss</Text>
-          <View style={styles.valueBadge}>
-            <Text style={styles.valueText}>{stopLoss}</Text>
+          <Text style={[styles.label, { color: theme.subText }]}>
+            Stop Loss
+          </Text>
+          <View
+            style={[styles.valueBadge, { backgroundColor: theme.innerBox }]}
+          >
+            <Text style={[styles.valueText, { color: theme.valColor }]}>
+              {item?.stopLoss}
+            </Text>
           </View>
         </View>
+
         <View style={{ alignItems: "flex-end" }}>
-          <Text style={styles.label}>Target</Text>
-          <View style={styles.valueBadge}>
-            <Text style={styles.valueText}>{target}</Text>
+          <Text style={[styles.label, { color: theme.subText }]}>Target</Text>
+          <View
+            style={[styles.valueBadge, { backgroundColor: theme.innerBox }]}
+          >
+            <Text style={[styles.valueText, { color: theme.valColor }]}>
+              {item?.target}
+            </Text>
           </View>
         </View>
       </View>
 
-      <View style={styles.dottedDivider} />
+      <View
+        style={[styles.dottedDivider, { borderBottomColor: theme.borderColor }]}
+      />
 
+      {/* Footer */}
       <View style={styles.footer}>
         <MaterialCommunityIcons
           name="clock-outline"
           size={14}
-          color="#94a3b8"
+          color={theme.subText}
         />
-        <Text style={styles.footerText}>
-          {date} • {time}
+        <Text style={[styles.footerText, { color: theme.subText }]}>
+          {format(new Date(item?.createdAt), "dd MMM yyyy, hh:mm a")}
         </Text>
       </View>
     </View>
@@ -146,56 +171,44 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#ffffff",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
   },
-  logoText: { fontWeight: "bold", color: "#be123c" },
-  stockTitle: { color: "#ffffff", fontSize: 16, fontWeight: "bold" },
-  subText: { color: "#94a3b8", fontSize: 12 },
-  tagDhan: {
-    backgroundColor: "#1e293b",
+  logoText: { fontWeight: "bold", fontSize: 16 },
+  stockTitle: { fontSize: 16, fontWeight: "bold" },
+  subText: { fontSize: 12 },
+  tagBroker: {
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
     marginRight: 8,
   },
-  tagTextDhan: { color: "#60a5fa", fontSize: 10, fontWeight: "bold" },
+  tagTextBroker: { fontSize: 10, fontWeight: "bold" },
   tagStatus: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 },
   statusText: { fontSize: 10, fontWeight: "bold" },
-  divider: { height: 1, backgroundColor: "#1e293b", marginVertical: 12 },
+  divider: { height: 1, marginVertical: 12 },
   dottedDivider: {
     borderStyle: "dotted",
     borderBottomWidth: 1,
-    borderBottomColor: "#334155",
     marginVertical: 12,
   },
   detailsGrid: { flexDirection: "row", justifyContent: "space-between" },
-  label: { color: "#94a3b8", fontSize: 12, marginBottom: 6 },
-  buyBadge: {
-    backgroundColor: "#1e293b",
+  label: { fontSize: 12, marginBottom: 6 },
+  badge: {
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
   },
-  buyText: { color: "#4ade80", fontSize: 12, fontWeight: "600" },
-  marketBadge: {
-    backgroundColor: "#1e293b",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  marketText: { color: "#94a3b8", fontSize: 12 },
+  badgeText: { fontSize: 12, fontWeight: "600" },
   valueBadge: {
-    backgroundColor: "#1e293b",
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderRadius: 6,
     minWidth: 60,
     alignItems: "center",
   },
-  valueText: { color: "#94a3b8", fontSize: 14 },
+  valueText: { fontSize: 14 },
   footer: { flexDirection: "row", alignItems: "center" },
-  footerText: { color: "#94a3b8", fontSize: 12, marginLeft: 6 },
+  footerText: { fontSize: 12, marginLeft: 6 },
 });

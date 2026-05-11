@@ -1,3 +1,4 @@
+import { AntDesign } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
@@ -16,12 +17,18 @@ export default function CommonButton({
   loading = false,
   disabled = false,
   buttonWidth = "100%",
+  iconName,
+  iconSize = 16,
+  fontsize = 13,
 }: {
   handleClick?: () => void;
   title?: string;
   loading?: boolean;
   disabled?: boolean;
   buttonWidth?: DimensionValue;
+  iconName?: any;
+  iconSize?: number;
+  fontsize?: number;
 }) {
   return (
     <View style={styles.glowWrapper}>
@@ -51,12 +58,25 @@ export default function CommonButton({
                 end={{ x: 0.8, y: 0.6 }}
                 style={styles.shine}
               />
+              <View
+                style={{ flexDirection: "row", gap: 10, alignItems: "center" }}
+              >
+                {iconName && (
+                  <AntDesign
+                    name={iconName}
+                    size={iconSize}
+                    color={"#FFFFFF"}
+                  />
+                )}
 
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.text}>{title}</Text>
-              )}
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={[styles.text, { fontSize: fontsize }]}>
+                    {title}
+                  </Text>
+                )}
+              </View>
             </LinearGradient>
           </BlurView>
         </LinearGradient>
@@ -106,7 +126,6 @@ const styles = StyleSheet.create({
 
   text: {
     color: "#EAF2FF",
-    fontSize: 13,
     fontWeight: "600",
     letterSpacing: 0.5,
   },

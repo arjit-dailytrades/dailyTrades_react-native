@@ -1,10 +1,12 @@
+import NoData from "@/components/common/no-data/No-data";
 import PageHeader from "@/components/common/PageHeader";
+import TopBackground from "@/components/common/TopBackground";
 import SupportCard from "@/components/support/SupportCard";
 import SupportDetailModal from "@/components/support/SupportDetailModal";
 import SupportForm from "@/components/support/SupportForm";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { getSupportList } from "@/redux/slice/supportSlice";
 import { Ionicons } from "@expo/vector-icons";
-import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -66,54 +68,32 @@ export default function Support() {
 
     fetchSupport(nextPage, true);
   };
-  const colors = {
-    bg: isDark ? "#010D26" : "#ffffff",
-    card: isDark ? "#161B2C" : "#FFFFFF",
-    text: isDark ? "#FFFFFF" : "#1A2138",
-    subText: isDark ? "#9CA3AF" : "#666",
-    inputBg: isDark ? "#1F2937" : "#FFF",
-    accent: "#3B82F6",
-    border: isDark ? "#374151" : "#E5E7EB",
-    glassBorder: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
-    subtext: isDark ? "#94A3B8" : "#64748B",
-    primary: "#6366F1",
-    success: "#22C55E",
-    warning: "#F59E0B",
-  };
+
+  const theme = useAppTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
       <PageHeader title="Help & Support" showBack={true} />
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <Image
-          source={require("../assets/images/topBG.png")}
-          style={styles.bgImage}
-          contentFit="cover"
-        />
-      </View>
-
-      <View style={styles.hero}>
-        <TouchableOpacity
-          style={[styles.addButton, { backgroundColor: colors.primary }]}
-          onPress={() => setOpenForm(true)}
-        >
-          <Ionicons name="add" size={22} color="#fff" />
-          <Text style={styles.addText}>Create Ticket</Text>
-        </TouchableOpacity>
-      </View>
-
+      <TopBackground />
       <FlatList
         data={supports}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <SupportCard
-            item={item}
-            colors={colors}
-            onPress={() => handleViewDetails(item)}
-          />
+          <SupportCard item={item} onPress={() => handleViewDetails(item)} />
         )}
         contentContainerStyle={styles.listPadding}
+        ListHeaderComponent={() => (
+          <View style={styles.hero}>
+            <TouchableOpacity
+              style={[styles.addButton, { backgroundColor: theme.primary }]}
+              onPress={() => setOpenForm(true)}
+            >
+              <Ionicons name="add" size={22} color="#fff" />
+              <Text style={styles.addText}>Create Ticket</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         showsVerticalScrollIndicator={false}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.3}
@@ -123,6 +103,7 @@ export default function Support() {
         ListFooterComponent={
           loadingMore ? <ActivityIndicator size="small" /> : null
         }
+        ListEmptyComponent={<NoData title="No support ticket found!" />}
       />
 
       <SupportForm
@@ -147,12 +128,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 10,
     marginVertical: 15,
   },
-  bgImage: {
-    ...StyleSheet.absoluteFillObject,
-  },
+
   heroText: { fontSize: 22, fontWeight: "800" },
   addButton: {
     flexDirection: "row",
@@ -163,7 +141,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   addText: { color: "#fff", fontWeight: "600", marginLeft: 4 },
-  listPadding: { paddingHorizontal: 10, paddingBottom: 30 },
+  listPadding: { paddingHorizontal: 16, paddingBottom: 30 },
   card: {
     padding: 15,
     borderRadius: 18,

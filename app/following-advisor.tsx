@@ -1,18 +1,18 @@
 import NoData from "@/components/common/no-data/No-data";
 import PageHeader from "@/components/common/PageHeader";
+import TopBackground from "@/components/common/TopBackground";
 import AdvisorCard from "@/components/expert/AdvisorCard";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { fetchFollowingAdvisor } from "@/redux/slice/expertSlice";
 import { AppDispatch, RootState } from "@/redux/store";
-import { Image } from "expo-image";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    RefreshControl,
-    StatusBar,
-    StyleSheet,
-    View,
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StatusBar,
+  StyleSheet,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
@@ -46,14 +46,7 @@ const FollowingAdvisorScreen: React.FC = () => {
         <StatusBar barStyle="light-content" backgroundColor="#0d1829" />
         <PageHeader title="Following Experts" />
 
-        {/* Background */}
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Image
-            source={require("../assets/images/topBG.png")}
-            style={styles.bgImage}
-            contentFit="cover"
-          />
-        </View>
+        <TopBackground />
 
         <View style={styles.centeredView}>
           <ActivityIndicator size="large" color={theme.primary ?? "#4f8ef7"} />
@@ -67,14 +60,7 @@ const FollowingAdvisorScreen: React.FC = () => {
       <StatusBar barStyle="light-content" backgroundColor="#0d1829" />
       <PageHeader title="Following Experts" />
 
-      {/* Background */}
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <Image
-          source={require("../assets/images/topBG.png")}
-          style={styles.bgImage}
-          contentFit="cover"
-        />
-      </View>
+      <TopBackground />
 
       <FlatList
         data={followingAdvisor}
@@ -117,9 +103,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  bgImage: {
-    ...StyleSheet.absoluteFillObject,
-  },
+
   scrollContent: {
     padding: 16,
     paddingBottom: 32,

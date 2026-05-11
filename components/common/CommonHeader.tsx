@@ -1,6 +1,11 @@
+import { getProfile } from "@/redux/slice/profileSlice";
+import { AppDispatch, RootState } from "@/redux/store";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { router } from "expo-router";
+import React, { useEffect } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import AvatarAtom from "../atoms/AvtarAtom";
 
 interface ExactHeaderProps {
   profileImageUri?: string;
@@ -17,13 +22,23 @@ export const CommonHeader: React.FC<ExactHeaderProps> = ({
   onSearchPress,
   onBellPress,
 }) => {
+  const handleProfilePress = () => {
+    router.push("/profile");
+  };
+
+  const profile = useSelector((state: RootState) => state.profile.profile);
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    dispatch(getProfile());
+  }, [dispatch]);
+
+  const name =
+    `${profile?.profile?.fName || ""} ${profile?.profile?.lName || ""}`.trim();
   return (
     <View style={styles.headerContainer}>
       {/* Profile Section */}
-      <TouchableOpacity onPress={onProfilePress} activeOpacity={0.8}>
-        <View style={styles.profileCircle}>
-          <Image source={{ uri: profileImageUri }} style={styles.image} />
-        </View>
+      <TouchableOpacity onPress={handleProfilePress} activeOpacity={0.8}>
+        <AvatarAtom name={name} uri={""} />
       </TouchableOpacity>
 
       <View style={styles.rightSection}>

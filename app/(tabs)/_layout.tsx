@@ -1,154 +1,174 @@
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import { Entypo, Feather, SimpleLineIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import GlowButton from "@/components/common/GlowButton";
+import {
+  Entypo,
+  Feather,
+  MaterialIcons,
+  SimpleLineIcons,
+} from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
 import { Tabs } from "expo-router";
 import React from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { Dimensions, Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const GAP = 10;
+const BUTTON_WIDTH = 120;
+const TAB_BAR_HEIGHT = 68;
+const SIDE_MARGIN = 16;
+const TAB_BAR_WIDTH = SCREEN_WIDTH - SIDE_MARGIN * 2 - GAP - BUTTON_WIDTH;
+
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
   const insets = useSafeAreaInsets();
+  const bottomPos = insets.bottom + 10;
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: isDark ? "#000" : "#fff",
-        tabBarInactiveTintColor: isDark ? "#bbb" : "#666",
+    <View style={{ flex: 1 }}>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarShowLabel: false,
 
-        tabBarStyle: [
-          styles.tabBarContainer,
-          {
-            bottom: insets.bottom,
+          tabBarStyle: {
+            position: "absolute",
+            bottom: bottomPos,
+            left: 16,
+            width: TAB_BAR_WIDTH,
+            height: TAB_BAR_HEIGHT,
+            borderRadius: 50,
+            borderTopWidth: 0,
+            backgroundColor: "transparent",
+            elevation: 0,
+            shadowOpacity: 0,
+            paddingHorizontal: 5,
+            marginLeft: 15,
           },
-        ],
 
-        tabBarBackground: () => (
-          <LinearGradient
-            colors={["rgba(255,255,255,0.15)", "rgba(255,255,255,0.02)"]}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            style={styles.borderGradient}
-          >
-            <LinearGradient
-              colors={["rgba(20,20,20,0.6)", "rgba(20,20,20,0.9)"]}
-              start={{ x: 0.5, y: 0 }}
-              end={{ x: 0.5, y: 1 }}
-              style={styles.innerBackground}
+          tabBarBackground: () => (
+            <BlurView
+              intensity={60}
+              tint="dark"
+              style={{
+                flex: 1,
+                borderRadius: 50,
+                overflow: "hidden",
+                borderWidth: 1,
+                borderColor: "rgba(255,255,255,0.18)",
+                backgroundColor: "rgba(255,255,255,0.06)",
+              }}
             />
-          </LinearGradient>
-        ),
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconWrapper, focused && styles.activeCircle]}>
-              <Entypo name="home" size={22} color={color} />
-            </View>
           ),
         }}
-      />
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            tabBarIcon: ({ color, focused }) => (
+              <View
+                style={[styles.iconWrapper, focused && styles.activeCircle]}
+              >
+                <Entypo
+                  name="home"
+                  size={22}
+                  color={focused ? "#fff" : "#888"}
+                />
+              </View>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="expert"
+          options={{
+            tabBarIcon: ({ color, focused }) => (
+              <View
+                style={[styles.iconWrapper, focused && styles.activeCircle]}
+              >
+                <Feather
+                  name="users"
+                  size={21}
+                  color={focused ? "#fff" : "#888"}
+                />
+              </View>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="position"
+          options={{
+            tabBarIcon: ({ color, focused }) => (
+              <View
+                style={[styles.iconWrapper, focused && styles.activeCircle]}
+              >
+                <MaterialIcons
+                  name="shopping-bag"
+                  size={24}
+                  color={focused ? "#fff" : "#888"}
+                />
+              </View>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="orders"
+          options={{
+            tabBarIcon: ({ color, focused }) => (
+              <View
+                style={[styles.iconWrapper, focused && styles.activeCircle]}
+              >
+                <SimpleLineIcons
+                  name="handbag"
+                  size={20}
+                  color={focused ? "#fff" : "#888"}
+                />
+              </View>
+            ),
+          }}
+        />
+      </Tabs>
 
-      <Tabs.Screen
-        name="expert"
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconWrapper, focused && styles.activeCircle]}>
-              <Feather name="users" size={20} color={color} />
-            </View>
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="orders"
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconWrapper, focused && styles.activeCircle]}>
-              {/* <AntDesign name="transaction" size={20} color={color} /> */}
-              <SimpleLineIcons name="handbag" size={20} color={color} />
-            </View>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconWrapper, focused && styles.activeCircle]}>
-              <Feather name="user" size={20} color={color} />
-            </View>
-          ),
-        }}
-      />
-    </Tabs>
+      <View
+        style={[
+          styles.buttonContainer,
+          {
+            bottom: bottomPos,
+            right: 15,
+            height: TAB_BAR_HEIGHT,
+          },
+        ]}
+        pointerEvents="box-none"
+      >
+        <GlowButton title="Dailynivesh" buttonWidth={120} buttonHeight={68} />
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  tabBarContainer: {
-    marginHorizontal: "5%",
-    width: "90%",
-    height: 70,
-    borderRadius: 40,
-    backgroundColor: "transparent",
-    borderTopWidth: 0,
-    elevation: 0,
-    paddingHorizontal: 5,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-  },
-  borderGradient: {
-    flex: 1,
-    borderRadius: 40,
-    padding: 1, // 👈 important (border thickness)
-  },
-
-  innerBackground: {
-    flex: 1,
-    borderRadius: 40,
-  },
-  glassBackground: {
-    flex: 1,
-    borderRadius: 40,
-    borderWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 10,
-  },
   iconWrapper: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 30,
+    borderRadius: 24,
     marginTop: Platform.select({
-      ios: 5,
+      ios: 30,
       android: 20,
     }),
   },
+
   activeCircle: {
-    backgroundColor: "#3ba5f1",
-    shadowColor: "#FFF",
+    backgroundColor: "#FFFFFF0D",
+    shadowColor: "#fff",
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 0,
-    elevation: 5,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+
+  buttonContainer: {
+    position: "absolute",
+    width: BUTTON_WIDTH,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

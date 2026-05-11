@@ -1,27 +1,60 @@
-import { Ionicons } from "@expo/vector-icons";
+import { useAppTheme } from "@/hooks/use-app-theme";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface Props {
   item: any;
-  colors: any;
   onPress: (item: any) => void;
 }
 
-export default function SupportCard({ item, colors, onPress }: Props) {
+export default function SupportCard({ item, onPress }: Props) {
+  const theme = useAppTheme();
   const statusColor =
     item.status === "RESOLVED"
-      ? colors.success
+      ? theme.success
       : item.status === "PENDING"
-        ? colors.warning
-        : colors.primary;
+        ? theme.warning
+        : theme.primary;
 
   return (
-    <View style={[styles.card, { borderColor: colors.border }]}>
+    <View style={[styles.card, { borderColor: theme.borderColor }]}>
       <View style={styles.cardHeader}>
-        <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
-          {item.title}
-        </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            flex: 1,
+            gap: 5,
+          }}
+        >
+          {item?.attachment ? (
+            <TouchableOpacity
+              style={[
+                styles.arrowCircle,
+                { backgroundColor: `${theme.primary}10` },
+              ]}
+            >
+              <AntDesign name="file-done" size={14} color={theme.primary} />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={[
+                styles.arrowCircle,
+                { backgroundColor: `${theme.primary}10` },
+              ]}
+            >
+              <AntDesign name="file-excel" size={14} color={theme.error} />
+            </TouchableOpacity>
+          )}
+
+          <Text
+            style={[styles.title, { color: theme.textColor }]}
+            numberOfLines={1}
+          >
+            {item.title}
+          </Text>
+        </View>
 
         <View
           style={[styles.statusBadge, { backgroundColor: `${statusColor}20` }]}
@@ -34,16 +67,16 @@ export default function SupportCard({ item, colors, onPress }: Props) {
       </View>
 
       <Text
-        style={[styles.comment, { color: colors.subtext }]}
+        style={[styles.comment, { color: theme.subText }]}
         numberOfLines={2}
       >
         {item.userComment}
       </Text>
 
-      <View style={[styles.cardFooter, { borderColor: colors.border }]}>
+      <View style={[styles.cardFooter, { borderColor: theme.borderColor }]}>
         <View style={styles.dateRow}>
-          <Ionicons name="calendar-outline" size={14} color={colors.subtext} />
-          <Text style={[styles.date, { color: colors.subtext }]}>
+          <Ionicons name="calendar-outline" size={14} color={theme.subText} />
+          <Text style={[styles.date, { color: theme.subText }]}>
             {new Date(item.createdAt).toLocaleDateString()}
           </Text>
         </View>
@@ -52,10 +85,10 @@ export default function SupportCard({ item, colors, onPress }: Props) {
           onPress={() => onPress(item)}
           style={[
             styles.arrowCircle,
-            { backgroundColor: `${colors.primary}10` },
+            { backgroundColor: `${theme.primary}10` },
           ]}
         >
-          <Ionicons name="arrow-forward" size={18} color={colors.primary} />
+          <Ionicons name="eye" size={18} color={theme.primary} />
         </TouchableOpacity>
       </View>
     </View>

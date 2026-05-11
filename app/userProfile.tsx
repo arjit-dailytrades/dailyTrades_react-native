@@ -1,10 +1,10 @@
 import PageHeader from "@/components/common/PageHeader";
+import TopBackground from "@/components/common/TopBackground";
 import Card from "@/components/profile/card";
 import UserDetailCard from "@/components/profile/userDetailCard";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { getProfile } from "@/redux/slice/profileSlice";
 import { AppDispatch, RootState } from "@/redux/store";
-import { Image } from "expo-image";
 import React, { useEffect } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -71,13 +71,7 @@ function profile() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       <PageHeader title="Profile" />
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <Image
-          source={require("../assets/images/topBG.png")}
-          style={styles.bgImage}
-          contentFit="cover"
-        />
-      </View>
+      <TopBackground />
 
       <ScrollView style={styles.scrollView}>
         <UserDetailCard user={profile} />
@@ -102,10 +96,6 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollView: {
     padding: 16,
-  },
-
-  bgImage: {
-    ...StyleSheet.absoluteFillObject,
   },
 
   sectionTitle: {

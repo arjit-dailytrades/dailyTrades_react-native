@@ -1,4 +1,6 @@
-import AppHeader from "@/components/AppHeader";
+import { CommonHeader } from "@/components/common/CommonHeader";
+import TopBackground from "@/components/common/TopBackground";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { Ionicons } from "@expo/vector-icons";
 import {
   FlatList,
@@ -7,8 +9,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function OrdersScreen() {
+  const theme = useAppTheme();
   const orders = [
     {
       id: "1",
@@ -89,8 +93,12 @@ export default function OrdersScreen() {
   );
 
   return (
-    <View style={styles.container}>
-      <AppHeader title="Orders" />
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
+      <TopBackground />
+      <CommonHeader
+        profileImageUri="https://picsum.photos/200/300"
+        onPremiumPress={() => console.log("Premium Clicked")}
+      />
 
       <FlatList
         data={orders}
@@ -98,14 +106,13 @@ export default function OrdersScreen() {
         renderItem={renderOrder}
         contentContainerStyle={{ padding: 16 }}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f3f4f6",
     padding: 0,
   },
 

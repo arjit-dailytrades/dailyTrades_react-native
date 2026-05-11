@@ -1,9 +1,9 @@
 import PageHeader from "@/components/common/PageHeader";
+import TopBackground from "@/components/common/TopBackground";
 import AgreementCard from "@/components/organisms/AgreementCard";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { getAgreementList } from "@/redux/slice/agreementSlice";
 import { AppDispatch, RootState } from "@/redux/store";
-import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -11,8 +11,7 @@ import {
   RefreshControl,
   StatusBar,
   StyleSheet,
-  View,
-  useColorScheme,
+  useColorScheme
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
@@ -62,13 +61,7 @@ export default function AgreementScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
       <PageHeader title="Accepted Agreement" showBack={true} />
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <Image
-          source={require("../assets/images/topBG.png")}
-          style={styles.bgImage}
-          contentFit="cover"
-        />
-      </View>
+      <TopBackground />
 
       <FlatList
         data={agreement}
@@ -98,9 +91,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginVertical: 15,
   },
-  bgImage: {
-    ...StyleSheet.absoluteFillObject,
-  },
+
   heroText: { fontSize: 22, fontWeight: "800" },
   addButton: {
     flexDirection: "row",

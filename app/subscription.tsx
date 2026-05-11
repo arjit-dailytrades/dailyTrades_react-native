@@ -1,10 +1,11 @@
 import NoData from "@/components/common/no-data/No-data";
 import PageHeader from "@/components/common/PageHeader";
+import TopBackground from "@/components/common/TopBackground";
 import { SubscriptionCard } from "@/components/subscription/subscription-card";
 import SubscriptionFilters from "@/components/subscription/subscription-filter";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { getSubscriptionList } from "@/redux/slice/subscriptionSlice";
 import { AppDispatch, RootState } from "@/redux/store";
-import { Image } from "expo-image";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -14,8 +15,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
@@ -66,8 +66,7 @@ export default function Subscription() {
     (state: RootState) => state.subscription,
   );
   const dispatch = useDispatch<AppDispatch>();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const theme = useAppTheme();
   const [activeFilter, setActiveFilter] = useState("");
   const [searchText, setSearchText] = useState("");
   const [page, setPage] = useState<number>(1);
@@ -167,25 +166,11 @@ export default function Subscription() {
     );
   }
 
-  const theme = {
-    bg: isDark ? "#010D26" : "#ffffff",
-    card: isDark ? "#1E293B" : "#FFFFFF",
-    text: isDark ? "#FFFFFF" : "#1A2138",
-    subText: isDark ? "#9CA3AF" : "#666",
-    border: isDark ? "rgba(255,255,255,0.1)" : "#E5E7EB",
-  };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <Image
-          source={require("../assets/images/topBG.png")}
-          style={styles.bgImage}
-          contentFit="cover"
-        />
-      </View>
       <StatusBar barStyle="light-content" />
       <PageHeader title="My Subscription" />
-
+      <TopBackground />
       <FlatList
         data={filteredData}
         keyExtractor={(item: any) => item._id?.toString()}
@@ -229,10 +214,6 @@ export default function Subscription() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "transparent" },
-  bgImage: {
-    ...StyleSheet.absoluteFillObject,
-  },
-
   listContent: { paddingHorizontal: 16, paddingBottom: 32 },
   listContentEmpty: {
     paddingHorizontal: 16,

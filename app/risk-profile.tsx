@@ -1,11 +1,11 @@
 import CommonButton from "@/components/common/CommonButton";
 import GlowButton from "@/components/common/GlowButton";
 import PageHeader from "@/components/common/PageHeader";
+import TopBackground from "@/components/common/TopBackground";
 import OptionCard from "@/components/riskProfile/optionCard";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { getAnswer, getQuestions } from "@/redux/slice/riskProfileSlice";
 import { AppDispatch, RootState } from "@/redux/store";
-import { Image } from "expo-image";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -99,13 +99,7 @@ const KYCQuizScreen: React.FC = () => {
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.bg }]}>
       <StatusBar barStyle="light-content" backgroundColor="#0d1829" />
       <PageHeader title="Risk Profile" />
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <Image
-          source={require("../assets/images/topBG.png")}
-          style={styles.bgImage}
-          contentFit="cover"
-        />
-      </View>
+      <TopBackground />
 
       <ScrollView
         style={styles.scrollView}
@@ -197,9 +191,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  bgImage: {
-    ...StyleSheet.absoluteFillObject,
-  },
+
   centeredView: {
     flex: 1,
     alignItems: "center",

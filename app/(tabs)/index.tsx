@@ -1,7 +1,9 @@
-import AppHeader from "@/components/AppHeader";
 import ConnectBrokerCard from "@/components/broker/ConnectBroker";
-import TradeCard from "@/components/trade/TradeCard";
+import { CommonHeader } from "@/components/common/CommonHeader";
+import TopBackground from "@/components/common/TopBackground";
+import TradeCard from "@/components/organisms/TradeCard";
 import TradeFilters from "@/components/trade/TradeFilter";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { fetchExpertDetail } from "@/redux/slice/expertSlice";
 import {
   fetchCanOpenScript,
@@ -16,14 +18,15 @@ import {
   ActivityIndicator,
   FlatList,
   Platform,
+  StatusBar,
   StyleSheet,
   Text,
   useColorScheme,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
-//  Stable ListHeader (never causes scroll glitch)
 const ListHeader = ({
   typeOptions,
   segmentOptions,
@@ -56,56 +59,8 @@ const ListHeader = ({
   </View>
 );
 
-//  Stable ListFooter
-const ListFooter = ({
-  loading,
-  hasMore,
-  isDark,
-}: {
-  loading: boolean;
-  hasMore: boolean;
-  isDark: boolean;
-}) => {
-  if (loading) {
-    return (
-      <View style={{ paddingVertical: 20, alignItems: "center" }}>
-        <ActivityIndicator color={isDark ? "#fff" : "#010D26"} />
-      </View>
-    );
-  }
-  if (!hasMore) {
-    return (
-      <View style={{ paddingVertical: 20, alignItems: "center" }}>
-        <Text
-          style={{ color: isDark ? "#ffffff60" : "#00000060", fontSize: 12 }}
-        >
-          No more trades
-        </Text>
-      </View>
-    );
-  }
-  return null;
-};
-
-// Stable empty state
-const ListEmpty = ({
-  loading,
-  isDark,
-}: {
-  loading: boolean;
-  isDark: boolean;
-}) => {
-  if (loading) return null;
-  return (
-    <View style={{ paddingVertical: 60, alignItems: "center" }}>
-      <Text style={{ color: isDark ? "#ffffff60" : "#00000060", fontSize: 14 }}>
-        No trades available
-      </Text>
-    </View>
-  );
-};
-
 export default function HomeScreen() {
+  const theme = useAppTheme();
   const dispatch = useDispatch<AppDispatch>();
   const {
     scripts,
@@ -215,16 +170,6 @@ export default function HomeScreen() {
     if (tokens.length) requestLTP(tokens);
   }, [scripts]);
 
-  const resetFilters = useCallback(
-    (newSegment: string, newType: string, newFreePaid: string) => {
-      setPage(1);
-      setSegment(newSegment);
-      setType(newType);
-      setFreePaid(newFreePaid);
-    },
-    [],
-  );
-
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     setPage(1);
@@ -234,7 +179,6 @@ export default function HomeScreen() {
         dispatch(fetchScriptStats({ type, segment, freePaid, advisorId })),
       ]);
     } finally {
-      // Always stop spinner even if requests fail
       setRefreshing(false);
     }
   }, [type, segment, freePaid, advisorId]);
@@ -297,13 +241,13 @@ export default function HomeScreen() {
   );
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: isDark ? "#010D26" : "#ffffff" },
-      ]}
-    >
-      <AppHeader title="Trades" />
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
+      <StatusBar barStyle="light-content" />
+      <TopBackground />
+      <CommonHeader
+        profileImageUri="https://picsum.photos/200/300"
+        onPremiumPress={() => console.log("Premium Clicked")}
+      />
 
       <FlatList
         data={scripts}
@@ -315,13 +259,25 @@ export default function HomeScreen() {
         onEndReachedThreshold={0.4}
         ListHeaderComponent={listHeader}
         ListFooterComponent={
-          <ListFooter
-            loading={loading && page > 1}
-            hasMore={hasMore}
-            isDark={isDark}
-          />
+          loading && page > 1 ? (
+            <ActivityIndicator
+              style={{ paddingVertical: 20 }}
+              color={isDark ? "#fff" : "#010D26"}
+            />
+          ) : null
         }
-        ListEmptyComponent={<ListEmpty loading={loading} isDark={isDark} />}
+        ListEmptyComponent={
+          !loading ? (
+            <Text
+              style={[
+                styles.emptyText,
+                { color: isDark ? "#ffffff60" : "#00000060" },
+              ]}
+            >
+              No trades available
+            </Text>
+          ) : null
+        }
         removeClippedSubviews={Platform.OS === "android"}
         maxToRenderPerBatch={8}
         initialNumToRender={6}
@@ -338,78 +294,21 @@ export default function HomeScreen() {
         handleSelectPlan={handleSelectPlan}
         selectedPlan={selectedPlan}
       /> */}
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f3f4f6",
-    paddingBottom: 50,
   },
   listContent: {
     paddingBottom: 100,
     flexGrow: 1,
   },
-  header: {
-    backgroundColor: "#5a2ca0",
-    paddingTop: 50,
-    paddingBottom: 15,
-    paddingHorizontal: 15,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-
-  headerTitle: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-
-  headerIcons: {
-    flexDirection: "row",
-  },
-
-  filters: {
-    marginTop: Platform.select({
-      ios: 10,
-      android: 5,
-    }),
-    padding: 5,
-  },
-
-  sectionTitle: {
-    marginLeft: 15,
-    marginTop: 10,
-    fontWeight: "600",
-  },
-
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.4)",
-  },
-
-  modalBox: {
-    backgroundColor: "#fff",
-    padding: 20,
-    width: "80%",
-    borderRadius: 10,
-  },
-
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-
-  closeBtn: {
-    marginTop: 20,
-    backgroundColor: "#6C3EF4",
-    padding: 10,
-    alignItems: "center",
-    borderRadius: 8,
+  emptyText: {
+    textAlign: "center",
+    marginTop: 60,
+    fontSize: 14,
   },
 });

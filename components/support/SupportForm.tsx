@@ -7,6 +7,7 @@ import * as IntentLauncher from "expo-intent-launcher";
 import * as Sharing from "expo-sharing";
 import { useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -33,6 +34,7 @@ export default function SupportForm({ visible, onClose }: any) {
   const [comment, setComment] = useState("");
   const [file, setFile] = useState<any>(null);
   const [errors, setErrors] = useState<any>({});
+  const [isSubmitting, setSubmitting] = useState(false);
 
   const colors = {
     bg: isDark ? "#111827" : "#ffffff",
@@ -115,7 +117,7 @@ export default function SupportForm({ visible, onClose }: any) {
 
   const submit = async () => {
     if (!validateForm()) return;
-
+    setSubmitting(true);
     try {
       await dispatch(
         createSupport({
@@ -133,6 +135,9 @@ export default function SupportForm({ visible, onClose }: any) {
       onClose();
     } catch (error) {
       setErrors({ api: "Something went wrong" });
+      setSubmitting(false);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -163,12 +168,6 @@ export default function SupportForm({ visible, onClose }: any) {
           onPress={handleCloseModal}
         />
 
-        {/*
-         * KeyboardAvoidingView wraps the modal sheet.
-         * - iOS  → behavior="padding"  shifts the view up by the keyboard height
-         * - Android → behavior="height" shrinks the available height
-         * Both prevent the keyboard from covering the inputs / buttons.
-         */}
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "padding"}
           style={styles.kavContainer}
@@ -192,10 +191,6 @@ export default function SupportForm({ visible, onClose }: any) {
                 </Text>
               </View>
 
-              {/*
-               * ScrollView with keyboardShouldPersistTaps="handled" so taps on
-               * buttons inside are registered even while the keyboard is open.
-               */}
               <ScrollView
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
@@ -313,7 +308,6 @@ export default function SupportForm({ visible, onClose }: any) {
                 {errors.api && <Text style={styles.error}>{errors.api}</Text>}
               </ScrollView>
 
-              {/* Buttons — outside ScrollView so they stay pinned above keyboard */}
               <View style={styles.buttons}>
                 <TouchableOpacity
                   style={[
@@ -326,7 +320,11 @@ export default function SupportForm({ visible, onClose }: any) {
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.submitBtn} onPress={submit}>
-                  <Text style={{ color: "#fff" }}>Submit</Text>
+                  {isSubmitting ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <Text style={{ color: "#fff" }}>Submit</Text>
+                  )}
                 </TouchableOpacity>
               </View>
             </View>

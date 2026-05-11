@@ -1,4 +1,5 @@
-import AppHeader from "@/components/AppHeader";
+import { CommonHeader } from "@/components/common/CommonHeader";
+import TopBackground from "@/components/common/TopBackground";
 import ViewPlanModal from "@/components/common/ViewPlanModal";
 import ExpertCard from "@/components/expert/ExpertCard";
 import ExpertFilter from "@/components/expert/ExpertFilter";
@@ -18,6 +19,7 @@ import {
   useColorScheme,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function ExpertScreen() {
@@ -142,8 +144,12 @@ export default function ExpertScreen() {
     dispatch(toggleFollowAdvisor({ id, isFollow }));
   };
   return (
-    <View style={[styles.container, { backgroundColor: theme.bg }]}>
-      <AppHeader title="Experts" />
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
+      <TopBackground />
+      <CommonHeader
+        profileImageUri="https://picsum.photos/200/300"
+        onPremiumPress={() => console.log("Premium Clicked")}
+      />
 
       <ExpertFilter
         advisorTypeOption={advisorTypeOptions}
@@ -198,12 +204,13 @@ export default function ExpertScreen() {
         onClose={() => setShowPlan(false)}
         selectedKey={selectedKey}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+
   search: {
     margin: 15,
     borderRadius: 12,

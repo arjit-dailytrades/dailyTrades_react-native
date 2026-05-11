@@ -1,3 +1,4 @@
+import { AntDesign } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
@@ -16,12 +17,16 @@ export default function GlowButton({
   loading = false,
   disabled = false,
   buttonWidth = 150,
+  iconName,
+  buttonHeight = 40,
 }: {
   handleClick?: () => void;
   title?: string;
   loading?: boolean;
   disabled?: boolean;
   buttonWidth?: DimensionValue;
+  iconName?: any;
+  buttonHeight?: DimensionValue;
 }) {
   return (
     <View style={styles.outerGlowWrapper}>
@@ -37,7 +42,7 @@ export default function GlowButton({
               style={[
                 styles.mainBtnBody,
                 (disabled || loading) && styles.disabled,
-                { minWidth: buttonWidth },
+                { minWidth: buttonWidth, minHeight: buttonHeight },
               ]}
             >
               {/* Glass shine */}
@@ -54,12 +59,19 @@ export default function GlowButton({
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFill}
               />
+              <View
+                style={{ flexDirection: "row", gap: 10, alignItems: "center" }}
+              >
+                {iconName && (
+                  <AntDesign name={iconName} size={16} color={"#FFFFFF"} />
+                )}
 
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.buttonText}>{title}</Text>
-              )}
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.buttonText}>{title}</Text>
+                )}
+              </View>
             </LinearGradient>
           </BlurView>
         </View>
