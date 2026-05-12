@@ -7,17 +7,34 @@ type Props = {
   color: string;
   active?: boolean;
   onPress?: () => void;
+  height?: number;
+  width?: number;
+  iconSize?: number;
 };
 
-const IconButton = ({ icon, color, active = false, onPress }: Props) => {
+const IconButton = ({
+  icon,
+  color,
+  active = false,
+  onPress,
+  height = 35,
+  width = 35,
+  iconSize = 14,
+}: Props) => {
   return (
     <TouchableOpacity
       activeOpacity={0.8}
       style={styles.wrapper}
       onPress={onPress}
     >
-      <View style={[styles.button, active && styles.activeButton]}>
-        <AntDesign name={icon} size={14} color={color} />
+      <View
+        style={[
+          styles.button,
+          active && styles.activeButton,
+          { height, width },
+        ]}
+      >
+        <AntDesign name={icon} size={iconSize} color={color} />
       </View>
     </TouchableOpacity>
   );
@@ -28,8 +45,6 @@ export default IconButton;
 const styles = StyleSheet.create({
   wrapper: {},
   button: {
-    width: 35,
-    height: 35,
     borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",

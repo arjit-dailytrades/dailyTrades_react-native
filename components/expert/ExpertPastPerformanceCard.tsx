@@ -1,56 +1,30 @@
+import { segmentMapping, statusMapping } from "@/constants/data";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { downloadResearchReport } from "@/redux/slice/expertSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { format } from "date-fns";
-import { router } from "expo-router";
 import React, { useState } from "react";
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  useColorScheme,
-  View,
-} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import BadgeAtom from "../atoms/BadgeAtom";
+import { BoxAtom } from "../atoms/BoxAtom";
 import GlowButton from "../common/GlowButton";
 
-interface AdvisorMapping {
-  [key: string]: string;
+type StatusColor = "success" | "error" | "neutral";
+
+function getStatusColor(status: string): StatusColor {
+  if (status === "TARGET_HIT") return "success";
+  if (status === "STOP_LOSS_HIT" || status === "EXPIRED") return "error";
+  return "neutral";
 }
 
 export default function ExpertPastPerformanceCard({ item }: { item: any }) {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
   const dispatch = useDispatch<AppDispatch>();
-  const [isDownloadId, setIsDownloadingId] = useState(null);
-  const { fileUri, isDownloading } = useSelector(
-    (state: RootState) => state.expert,
-  );
+  const theme = useAppTheme();
 
-  const theme = {
-    cardBg: isDark ? "#FFFFFF0D" : "#ffffff",
-    borderColor: isDark ? "#FFFFFF1A" : "#0D0D0D1A",
-    text: isDark ? "#FFFFFF" : "#1A2138",
-    subText: isDark ? "#9CA3AF" : "#666666",
-    accuracyBg: isDark ? "rgba(59, 130, 246, 0.15)" : "#DBEAFE",
-    badgeBg: isDark ? "#1A2A3A" : "#66666617",
-    badgeText: isDark ? "#FFFFFF80" : "#050505c2",
-  };
+  const [isDownloadId, setIsDownloadingId] = useState<string | null>(null);
 
-  const statusMapping: AdvisorMapping = {
-    EXPIRED: "Trade Expired",
-    TARGET_MET: "Target Hit",
-    STOP_LOSS_MET: "Stop Loss Hit",
-  };
-
-  const handlePress = () => {
-    router.push({
-      pathname: "/expertPastPerformance",
-      params: {
-        advisorId: item?.id,
-      },
-    });
-  };
+  const { isDownloading } = useSelector((state: RootState) => state.expert);
 
   const getFormattedDate = () => {
     if (item?.scriptExpired && item?.scriptExpiredAt) {
@@ -64,70 +38,65 @@ export default function ExpertPastPerformanceCard({ item }: { item: any }) {
     }
     return "";
   };
+
   const handleDownload = (record: any) => {
     setIsDownloadingId(record.id);
     dispatch(
       downloadResearchReport({
-        id: record.id,
+        id: record._id,
         advisor: { fName: "", lName: "" },
         record: record,
       }),
-    );
+    ).finally(() => {
+      setIsDownloadingId(null);
+    });
   };
+
+  const statusColorKey = getStatusColor(item?.status);
+
+  const statusColor =
+    statusColorKey === "success"
+      ? theme.success
+      : statusColorKey === "error"
+        ? theme.error
+        : theme.error;
+
   return (
     <View
       style={[
         styles.card,
-        { backgroundColor: theme.cardBg, borderColor: theme.borderColor },
+        { backgroundColor: theme.cardBg, borderColor: theme.glassBorder },
       ]}
     >
       {/* Top Section */}
       <View style={styles.headerRow}>
         <View style={styles.profileSection}>
-          <TouchableOpacity onPress={handlePress}>
+          <View style={{ flex: 1, marginRight: 8 }}>
             <View
-              style={[
-                styles.iconWrapper,
-                {
-                  backgroundColor: isDark
-                    ? "rgba(255,255,255,0.05)"
-                    : "rgba(0,0,0,0.03)",
-                },
-                item?.isSubscribed && {
-                  borderColor: "#4ADE80",
-                  borderWidth: 1.5,
-                },
-              ]}
+              style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
             >
-              <Image
-                source={require("../../assets/images/expert.png")}
-                style={styles.avatar}
+              <Text
+                style={[styles.name, { color: theme.textColor }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {item?.title}
+              </Text>
+              <BadgeAtom
+                label={item?.scriptPriceType}
+                type={item?.scriptPriceType === "PAID" ? "paid" : "free"}
               />
             </View>
-          </TouchableOpacity>
 
-          <View>
-            <Text
-              style={[styles.name, { color: theme.text }]}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {item?.title}
+            <Text style={[styles.subText, { color: theme.subText }]}>
+              {segmentMapping[item?.segment] || item?.segment}
             </Text>
-            <View
-              style={[
-                styles.accuracyBadge,
-                { backgroundColor: theme.accuracyBg },
-              ]}
-            >
-              <Text style={styles.accuracyText}>{item?.scriptPriceType}</Text>
-            </View>
           </View>
         </View>
 
         <View style={styles.callsSection}>
-          <Text style={[styles.callCount, { color: theme.text }]}>
-            {statusMapping[item?.status]}
+          <Text style={[styles.callCount, { color: statusColor }]}>
+            {statusMapping[item?.status] ?? item?.status}
           </Text>
           <Text style={[styles.callLabel, { color: theme.subText }]}>
             {getFormattedDate()}
@@ -135,57 +104,30 @@ export default function ExpertPastPerformanceCard({ item }: { item: any }) {
         </View>
       </View>
 
-      <View>
-        <View style={styles.row}>
-          <View style={styles.box}>
-            <Text style={styles.label}>Min/Max Entry</Text>
-            <Text
-              style={[
-                styles.value,
-                { backgroundColor: theme.badgeBg, color: theme.badgeText },
-              ]}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              ₹ {item?.entryMin ?? "-"} - {item?.entryMax ?? "-"}
-            </Text>
-          </View>
-
-          <View style={styles.box}>
-            <Text style={styles.label}>Stop loss</Text>
-            <Text
-              style={[
-                styles.value,
-                { backgroundColor: theme.badgeBg, color: theme.badgeText },
-              ]}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              ₹ {item?.stopLoss ?? "-"}
-            </Text>
-          </View>
-
-          <View style={styles.box}>
-            <Text style={styles.label}>Target</Text>
-            <Text
-              style={[
-                styles.value,
-                { backgroundColor: theme.badgeBg, color: theme.badgeText },
-              ]}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              ₹ {item?.target ?? "-"}
-            </Text>
-          </View>
-        </View>
-        <GlowButton
-          handleClick={() => handleDownload(item)}
-          title="Download"
-          buttonWidth={"100%"}
-          loading={isDownloadId === item.id && isDownloading}
+      {/* Price Info Row */}
+      <View style={styles.row}>
+        <BoxAtom
+          label="Min/Max Entry"
+          value={`₹ ${item?.entryMin ?? "-"} - ${item?.entryMax ?? "-"}`}
+        />
+        <BoxAtom
+          label="Stop Loss"
+          value={`₹ ${item?.stopLoss ?? "-"}`}
+          valueColor={item?.stopLossHit ? theme.error : undefined}
+        />
+        <BoxAtom
+          label="Target"
+          value={`₹ ${item?.target ?? "-"}`}
+          valueColor={item?.targetHit ? theme.success : undefined}
         />
       </View>
+
+      <GlowButton
+        handleClick={() => handleDownload(item)}
+        title="Download"
+        buttonWidth="100%"
+        loading={isDownloadId === item.id && isDownloading}
+      />
     </View>
   );
 }
@@ -207,44 +149,24 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
+    paddingBottom: 10,
     borderBottomColor: "gray",
     borderBottomWidth: 1,
     borderStyle: "dashed",
   },
   profileSection: {
     flexDirection: "row",
-  },
-  iconWrapper: {
-    width: 50,
-    height: 50,
-    borderRadius: 100,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 8,
-    marginRight: 8,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 25,
+    flex: 1,
   },
   name: {
     fontSize: 14,
     fontWeight: "700",
     flexShrink: 1,
-    maxWidth: "90%",
+    maxWidth: "60%",
   },
-  accuracyBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-    marginTop: 4,
-    alignSelf: "flex-start",
-  },
-  accuracyText: {
-    color: "#3B82F6",
-    fontSize: 8,
-    fontWeight: "bold",
+  subText: {
+    fontSize: 12,
+    marginTop: 2,
   },
   callsSection: {
     alignItems: "flex-end",
@@ -258,32 +180,11 @@ const styles = StyleSheet.create({
     textAlign: "right",
     width: 90,
   },
-
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 20,
+    marginTop: 12,
     gap: 8,
-  },
-  box: {
-    flex: 1,
-    alignItems: "center",
-    minWidth: 0,
-  },
-
-  label: {
-    color: "#A0AEC0",
-    fontSize: 12,
-    marginBottom: 6,
-  },
-
-  value: {
-    fontSize: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    borderRadius: 8,
-    textAlign: "center",
-    flexShrink: 1,
-    maxWidth: "100%",
   },
 });

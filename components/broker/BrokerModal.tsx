@@ -59,6 +59,10 @@ export default function BrokerModal({ isVisible, onClose }: BrokerModalProps) {
   const { brokerList, isLoadingBroker, brokerCredential } = useSelector(
     (state: RootState) => state.broker,
   );
+  const handleCloseModal = () => {
+    setSelectedBroker(null);
+    onClose();
+  };
 
   useEffect(() => {
     if (isVisible) {
@@ -139,16 +143,13 @@ export default function BrokerModal({ isVisible, onClose }: BrokerModalProps) {
     WebBrowser.dismissBrowser();
     dispatch(getBrokerCredential());
     setSelectedBroker(null);
-    onClose();
+    handleCloseModal();
   };
   const handleBrokerLogin = async (item: any) => {
     try {
       if (item.brokerId === "DHAN") {
         const token = await AsyncStorage.getItem("t");
         if (!token) return;
-
-        // Note: Backend ko pata chalna chahiye ki redirect app par bhejna hai.
-        // Isliye 'state' parameter mein 'mobile' bhejna ek standard practice hai.
         const res = await fetch(
           // `${process.env.EXPO_PUBLIC_S_TO_S_API_BASE}/broker/dhan/login?platform=mobile`,
           `${process.env.EXPO_PUBLIC_S_TO_S_API_BASE}/broker/dhan/login`,
@@ -164,9 +165,7 @@ export default function BrokerModal({ isVisible, onClose }: BrokerModalProps) {
         const data = await res.json();
 
         if (data?.consentUrl) {
-          // Browser open karein
           await WebBrowser.openBrowserAsync(data.consentUrl);
-          // Note: App control yahan ruk jayega jab tak user browser band nahi karta
         }
       }
     } catch (error) {
@@ -181,8 +180,6 @@ export default function BrokerModal({ isVisible, onClose }: BrokerModalProps) {
     }
   };
   const handleAuthorize = async (url: string) => {
-    // console.log(url, "============urla");
-
     await WebBrowser.openBrowserAsync(url);
   };
   const renderBroker = ({ item }: { item: any }) => {
@@ -191,10 +188,14 @@ export default function BrokerModal({ isVisible, onClose }: BrokerModalProps) {
       icon: null,
     };
     // Check if connected from Redux state
+    const now = new Date();
+
     const isConnected = brokerCredential?.some(
-      (bc: any) => bc.brokerId === item.brokerId,
+      (bc: any) =>
+        bc.broker === item.brokerId &&
+        bc.status === "ACTIVE" &&
+        new Date(bc.expiresAt) > now,
     );
-    // const isConnected = true;
     console.log("brokerCredential:", brokerCredential);
 
     return (
@@ -241,12 +242,12 @@ export default function BrokerModal({ isVisible, onClose }: BrokerModalProps) {
       animationType="slide"
       transparent
       visible={isVisible}
-      onRequestClose={onClose}
+      onRequestClose={handleCloseModal}
     >
       <View style={styles.overlay}>
         <TouchableOpacity
           style={styles.dismissArea}
-          onPress={onClose}
+          onPress={handleCloseModal}
           activeOpacity={1}
         />
 

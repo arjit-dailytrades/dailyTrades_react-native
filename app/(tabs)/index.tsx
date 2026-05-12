@@ -1,4 +1,4 @@
-import ConnectBrokerCard from "@/components/broker/ConnectBroker";
+import ConnectBrokerCard from "@/components/broker/ConnectBrokerCard";
 import { CommonHeader } from "@/components/common/CommonHeader";
 import TopBackground from "@/components/common/TopBackground";
 import TradeCard from "@/components/organisms/TradeCard";

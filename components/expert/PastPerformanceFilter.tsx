@@ -193,6 +193,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     paddingTop: 0,
+    paddingBottom: 0,
   },
   filterWrapper: {
     flexDirection: "row",

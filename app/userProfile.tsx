@@ -76,7 +76,7 @@ function profile() {
       <ScrollView style={styles.scrollView}>
         <UserDetailCard user={profile} />
         {data.map((item, index) => (
-          <View>
+          <View key={index}>
             <Text style={[styles.sectionTitle, { color: theme.textColor }]}>
               {item.section}
             </Text>

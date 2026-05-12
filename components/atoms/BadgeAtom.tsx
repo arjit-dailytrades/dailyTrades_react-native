@@ -27,7 +27,7 @@ const BadgeAtom = ({ label, type = "default", fontSize = 12 }: any) => {
 const styles = StyleSheet.create({
   badge: {
     paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingVertical: 2,
     borderRadius: 6,
     alignSelf: "flex-start",
   },

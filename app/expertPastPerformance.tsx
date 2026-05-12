@@ -1,278 +1,3 @@
-// import NoData from "@/components/common/no-data/No-data";
-// import ExpertPastPerformanceCard from "@/components/expert/ExpertPastPerformanceCard";
-// import ExpertPerformanceDetails from "@/components/expert/ExpertPerformanceDetails";
-// import PastPerformanceFilter from "@/components/expert/PastPerformanceFilter";
-// import { fetchExpertPerformance } from "@/redux/slice/expertSlice";
-// import { AppDispatch, RootState } from "@/redux/store";
-// import { useLocalSearchParams } from "expo-router";
-// import { useEffect, useMemo, useState } from "react";
-// import {
-//   ActivityIndicator,
-//   FlatList,
-//   StyleSheet,
-//   Text,
-//   useColorScheme,
-//   View,
-// } from "react-native";
-// import { useSafeAreaInsets } from "react-native-safe-area-context";
-// import { useDispatch, useSelector } from "react-redux";
-
-// export default function ExpertPerformance() {
-//   const { advisorId } = useLocalSearchParams();
-//   const dispatch = useDispatch<AppDispatch>();
-//   const colorScheme = useColorScheme();
-//   const insets = useSafeAreaInsets();
-//   const [page, setPage] = useState(1);
-//   const [search, setSearch] = useState("");
-//   const [activeFilter, setActiveFilter] = useState("Monthly");
-//   const [segment, setSegment] = useState("");
-//   const [type, setType] = useState("");
-//   const [freePaid, setFreePaid] = useState("");
-//   const [selected, setSelected] = useState("");
-//   const [debouncedSearch, setDebouncedSearch] = useState(search);
-//   const { expertPastPerformance, isLoadingPast } = useSelector(
-//     (state: RootState) => state.expert,
-//   );
-//   useEffect(() => {
-//     const handler = setTimeout(() => {
-//       setDebouncedSearch(search);
-//     }, 500);
-
-//     return () => {
-//       clearTimeout(handler);
-//     };
-//   }, [search]);
-//   useEffect(() => {
-//     dispatch(
-//       fetchExpertPerformance({
-//         advisorId,
-//         page,
-//         segment,
-//         type,
-//         selected,
-//         debouncedSearch,
-//         freePaid,
-//       }),
-//     );
-//   }, [page, segment, type, selected, debouncedSearch, freePaid]);
-
-//   const isDark = colorScheme === "dark";
-//   const theme = {
-//     bg: isDark ? "#060B1A" : "#F3F4F6",
-//     card: isDark ? "#161B2C" : "#FFFFFF",
-//     text: isDark ? "#FFFFFF" : "#1A2138",
-//     subText: isDark ? "#9CA3AF" : "#666",
-//     inputBg: isDark ? "#1F2937" : "#FFF",
-//     accent: "#3B82F6",
-//     border: isDark ? "#374151" : "#E5E7EB",
-//     glassBorder: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
-//   };
-//   const handleLoadMore = () => {
-//     if (!isLoadingPast && expertPastPerformance?.pages > page) {
-//       setPage((prev) => prev + 1);
-//     }
-//   };
-//   const renderFooter = () => {
-//     if (isLoadingPast && page > 1) {
-//       return (
-//         <View style={styles.footerLoader}>
-//           <ActivityIndicator size="small" color="#0068FF" />
-//         </View>
-//       );
-//     }
-//     return null;
-//   };
-
-//   const segmentOptions = [
-//     {
-//       label: "Equity",
-//       value: "EQ",
-//     },
-//     {
-//       label: "Future",
-//       value: "FU",
-//     },
-//     {
-//       label: "Option",
-//       value: "OPT",
-//     },
-//   ];
-
-//   const typeOptions = [
-//     {
-//       label: "BTST",
-//       value: "BTST",
-//     },
-//     {
-//       label: "Intraday",
-//       value: "INTRADAY",
-//     },
-//     {
-//       label: "Positional",
-//       value: "POSITIONAL",
-//     },
-//     {
-//       label: "STBT",
-//       value: "STBT",
-//     },
-//     {
-//       label: "LONGTERM",
-//       value: "LONGTERM",
-//     },
-//   ];
-//   const priceOption = [
-//     {
-//       label: "Free",
-//       value: "FREE",
-//     },
-//     {
-//       label: "Paid",
-//       value: "PAID",
-//     },
-//   ];
-//   const filterOptions = [
-//     {
-//       label: "All",
-//       value: "",
-//     },
-//     {
-//       label: "Current Month",
-//       value: "current_month",
-//     },
-//     {
-//       label: "Last Month",
-//       value: "last_month",
-//     },
-//     {
-//       label: "Quarterly",
-//       value: "quarterly",
-//     },
-//     {
-//       label: "Yearly",
-//       value: "yearly",
-//     },
-//   ];
-
-//   const listData = useMemo(() => {
-//     const base = [
-//       { id: "header-details", type: "DETAILS" },
-//       { id: "header-filters", type: "FILTERS" },
-//     ];
-
-//     if (isLoadingPast && page === 1) {
-//       return [...base, { id: "loading-indicator", type: "INITIAL_LOADER" }];
-//     }
-
-//     return [...base, ...(expertPastPerformance?.records || [])];
-//   }, [isLoadingPast, expertPastPerformance, page]);
-
-//   const renderContent = ({ item }: any) => {
-//     if (item.type === "DETAILS") return <ExpertPerformanceDetails />;
-//     if (item.type === "FILTERS")
-//       return (
-//         <View
-//           style={[
-//             styles.stickyWrapper,
-//             { backgroundColor: theme.bg, paddingTop: insets.top },
-//           ]}
-//         >
-//           <PastPerformanceFilter
-//             typeOptions={typeOptions}
-//             segmentOptions={segmentOptions}
-//             segment={segment}
-//             setSegment={setSegment}
-//             type={type}
-//             setType={setType}
-//             priceOption={priceOption}
-//             freePaid={freePaid}
-//             setFreePaid={setFreePaid}
-//             search={search}
-//             setSearch={setSearch}
-//             selected={selected}
-//             setSelected={setSelected}
-//             filterOptions={filterOptions}
-//           />
-//           <View style={[styles.line, { backgroundColor: theme.glassBorder }]} />
-//         </View>
-//       );
-
-//     if (item.type === "INITIAL_LOADER") {
-//       return (
-//         <View style={styles.cardLoader}>
-//           <ActivityIndicator size="large" color="#0068FF" />
-//           <Text style={{ marginTop: 10, color: theme.subText }}>
-//             Fetching results...
-//           </Text>
-//         </View>
-//       );
-//     }
-
-//     return <ExpertPastPerformanceCard item={item} />;
-//   };
-//   return (
-//     <View style={[styles.container, { backgroundColor: theme.bg }]}>
-//       <FlatList
-//         data={listData}
-//         keyExtractor={(item, index) => item?.id?.toString() || index.toString()}
-//         renderItem={renderContent}
-//         stickyHeaderIndices={[1]}
-//         onEndReached={handleLoadMore}
-//         onEndReachedThreshold={0.5}
-//         ListFooterComponent={renderFooter}
-//         showsVerticalScrollIndicator={false}
-//         ListEmptyComponent={() =>
-//           !isLoadingPast ? (
-//             <View style={styles.emptyContainer}>
-//               <NoData />
-//               <Text style={{ color: theme.subText }}>No records found.</Text>
-//             </View>
-//           ) : null
-//         }
-//       />
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1 },
-//   search: {
-//     margin: 15,
-//     borderRadius: 12,
-//     paddingHorizontal: 15,
-//     height: 50,
-//     fontSize: 15,
-//     elevation: 3,
-//   },
-//   filterRow: { paddingHorizontal: 15, paddingBottom: 20 },
-//   filterBtn: {
-//     paddingHorizontal: 18,
-//     paddingVertical: 10,
-//     borderRadius: 25,
-//     marginRight: 10,
-//     elevation: 2,
-//   },
-//   filterText: { fontWeight: "600", fontSize: 13 },
-//   listContent: { paddingBottom: 30 },
-//   loaderContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-//   footerLoader: { paddingVertical: 20, alignItems: "center" },
-//   emptyContainer: { flex: 1, alignItems: "center", marginTop: 50 },
-//   line: {
-//     height: 1,
-//     width: "100%",
-//     marginBottom: 5,
-//   },
-//   cardLoader: {
-//     paddingVertical: 50,
-//     alignItems: "center",
-//     justifyContent: "center",
-//     minHeight: 200,
-//   },
-//   stickyWrapper: {
-//     zIndex: 10,
-//     elevation: 3,
-//   },
-// });
-
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -282,26 +7,39 @@ import {
   useColorScheme,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
-// Custom Components
 import NoData from "@/components/common/no-data/No-data";
+import { Tabs } from "@/components/common/Tabs";
+import TopBackground from "@/components/common/TopBackground";
+import Disclosure from "@/components/expert/Disclosure";
 import ExpertPastPerformanceCard from "@/components/expert/ExpertPastPerformanceCard";
 import ExpertPerformanceDetails from "@/components/expert/ExpertPerformanceDetails";
+import InvestorCharter from "@/components/expert/InvestorCharter";
 import PastPerformanceFilter from "@/components/expert/PastPerformanceFilter";
-
-// Redux
+import RegulatoryDisclosures from "@/components/expert/RegulatoryDisclosure";
+import UserAgreement from "@/components/expert/UserAgreement";
+import {
+  filterOptions,
+  PAST_PERFORMANCE_TAB,
+  priceOption,
+  segmentOptions,
+  TAB_OPTIONS,
+  typeOptions,
+} from "@/constants/data";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { fetchExpertPerformance } from "@/redux/slice/expertSlice";
 import { AppDispatch, RootState } from "@/redux/store";
+import { StatusBar } from "expo-status-bar";
 
 export default function ExpertPerformance() {
   const { advisorId } = useLocalSearchParams();
   const dispatch = useDispatch<AppDispatch>();
-  const colorScheme = useColorScheme();
-  const insets = useSafeAreaInsets();
+  const theme = useAppTheme();
 
-  // Filters & Pagination States
+  const [activeTab, setActiveTab] = useState(PAST_PERFORMANCE_TAB);
+
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [segment, setSegment] = useState("");
@@ -314,24 +52,31 @@ export default function ExpertPerformance() {
     (state: RootState) => state.expert,
   );
 
-  const isDark = colorScheme === "dark";
-
-  // Theme Object
-  const theme = {
-    bg: isDark ? "#060B1A" : "#F3F4F6",
-    text: isDark ? "#FFFFFF" : "#1A2138",
-    subText: isDark ? "#9CA3AF" : "#666",
-    glassBorder: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setPage(1);
+    setSearch("");
+    setSegment("");
+    setType("");
+    setFreePaid("");
+    setSelected("");
+    setDebouncedSearch("");
   };
 
-  // Search Debounce Logic
   useEffect(() => {
-    const handler = setTimeout(() => setDebouncedSearch(search), 500);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
     return () => clearTimeout(handler);
   }, [search]);
 
-  // Data Fetching Logic (Triggers on filter or page change)
   useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
+  useEffect(() => {
+    if (activeTab !== PAST_PERFORMANCE_TAB) return;
+
     dispatch(
       fetchExpertPerformance({
         advisorId,
@@ -343,16 +88,44 @@ export default function ExpertPerformance() {
         freePaid,
       }),
     );
-  }, [page, segment, type, selected, debouncedSearch, freePaid, advisorId]);
+  }, [
+    dispatch,
+    activeTab,
+    page,
+    segment,
+    type,
+    selected,
+    debouncedSearch,
+    freePaid,
+    advisorId,
+  ]);
 
-  // Pagination Handler
+  const handleSegmentChange = (val: string) => {
+    setPage(1);
+    setSegment(val);
+  };
+
+  const handleTypeChange = (val: string) => {
+    setPage(1);
+    setType(val);
+  };
+
+  const handleFreePaidChange = (val: string) => {
+    setPage(1);
+    setFreePaid(val);
+  };
+
+  const handleSelectedChange = (val: string) => {
+    setPage(1);
+    setSelected(val);
+  };
+
   const handleLoadMore = () => {
     if (!isLoadingPast && expertPastPerformance?.pages > page) {
       setPage((prev) => prev + 1);
     }
   };
 
-  // Footer Loader (For Infinite Scroll)
   const renderFooter = () => {
     if (isLoadingPast && page > 1) {
       return (
@@ -364,19 +137,20 @@ export default function ExpertPerformance() {
     return <View style={{ height: 40 }} />;
   };
 
-  // Data Formatting for FlatList (Merging Header + Content)
   const listData = useMemo(() => {
     const base = [
       { id: "header-details", type: "DETAILS" },
       { id: "header-filters", type: "FILTERS" },
     ];
 
-    // Case 1: Initial Loading (Show loader below filters)
+    if (activeTab !== PAST_PERFORMANCE_TAB) {
+      return [...base, { id: "tab-content", type: "TAB_CONTENT" }];
+    }
+
     if (isLoadingPast && page === 1) {
       return [...base, { id: "loading-indicator", type: "INITIAL_LOADER" }];
     }
 
-    // Case 2: No Data Found (Show NoData component below filters)
     if (
       !expertPastPerformance?.records ||
       expertPastPerformance.records.length === 0
@@ -384,11 +158,9 @@ export default function ExpertPerformance() {
       return [...base, { id: "no-data-item", type: "EMPTY_STATE" }];
     }
 
-    // Case 3: Data Available
     return [...base, ...(expertPastPerformance?.records || [])];
-  }, [isLoadingPast, expertPastPerformance, page]);
+  }, [isLoadingPast, expertPastPerformance, page, activeTab]);
 
-  // Unified Render Item function
   const renderContent = ({ item }: any) => {
     switch (item.type) {
       case "DETAILS":
@@ -397,34 +169,36 @@ export default function ExpertPerformance() {
       case "FILTERS":
         return (
           <View
-            style={[
-              styles.stickyWrapper,
-              {
-                backgroundColor: theme.bg,
-                paddingTop: insets.top > 0 ? insets.top : 10,
-              },
-            ]}
+            style={[styles.stickyWrapper, { backgroundColor: theme.blurBg }]}
           >
-            <PastPerformanceFilter
-              segment={segment}
-              setSegment={setSegment}
-              type={type}
-              setType={setType}
-              freePaid={freePaid}
-              setFreePaid={setFreePaid}
-              search={search}
-              setSearch={setSearch}
-              selected={selected}
-              setSelected={setSelected}
-              // Options are defined below
-              segmentOptions={segmentOptions}
-              typeOptions={typeOptions}
-              priceOption={priceOption}
-              filterOptions={filterOptions}
+            <Tabs
+              options={TAB_OPTIONS}
+              activeTab={activeTab}
+              setActiveTab={handleTabChange}
             />
-            <View
-              style={[styles.line, { backgroundColor: theme.glassBorder }]}
-            />
+            {activeTab === PAST_PERFORMANCE_TAB && (
+              <>
+                <PastPerformanceFilter
+                  segment={segment}
+                  setSegment={handleSegmentChange}
+                  type={type}
+                  setType={handleTypeChange}
+                  freePaid={freePaid}
+                  setFreePaid={handleFreePaidChange}
+                  search={search}
+                  setSearch={setSearch}
+                  selected={selected}
+                  setSelected={handleSelectedChange}
+                  segmentOptions={segmentOptions}
+                  typeOptions={typeOptions}
+                  priceOption={priceOption}
+                  filterOptions={filterOptions}
+                />
+                <View
+                  style={[styles.line, { backgroundColor: theme.glassBorder }]}
+                />
+              </>
+            )}
           </View>
         );
 
@@ -445,13 +219,35 @@ export default function ExpertPerformance() {
           </View>
         );
 
+      case "TAB_CONTENT":
+        switch (activeTab) {
+          case "Regulatory Disclosures":
+            return <RegulatoryDisclosures />;
+          case "Investor Charter":
+            return <InvestorCharter />;
+          case "User Agreement":
+            return <UserAgreement />;
+          case "Disclosure":
+            return <Disclosure />;
+          default:
+            return null;
+        }
+
       default:
-        return <ExpertPastPerformanceCard item={item} />;
+        return (
+          <View style={{ paddingHorizontal: 5 }}>
+            <ExpertPastPerformanceCard item={item} />
+          </View>
+        );
     }
   };
 
+  const isDark = useColorScheme() === "dark";
+
   return (
-    <View style={[styles.container, { backgroundColor: theme.bg }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
+      <StatusBar style={isDark ? "light" : "dark"} />
+      <TopBackground />
       <FlatList
         data={listData}
         keyExtractor={(item, index) => item?.id?.toString() || index.toString()}
@@ -462,42 +258,17 @@ export default function ExpertPerformance() {
         ListFooterComponent={renderFooter}
         showsVerticalScrollIndicator={false}
         removeClippedSubviews={false}
+        contentContainerStyle={styles.listContainer}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
-// --- CONFIG DATA ---
-const segmentOptions = [
-  { label: "Equity", value: "EQ" },
-  { label: "Future", value: "FU" },
-  { label: "Option", value: "OPT" },
-];
-
-const typeOptions = [
-  { label: "BTST", value: "BTST" },
-  { label: "Intraday", value: "INTRADAY" },
-  { label: "Positional", value: "POSITIONAL" },
-  { label: "STBT", value: "STBT" },
-  { label: "LONGTERM", value: "LONGTERM" },
-];
-
-const priceOption = [
-  { label: "Free", value: "FREE" },
-  { label: "Paid", value: "PAID" },
-];
-
-const filterOptions = [
-  { label: "All", value: "" },
-  { label: "Current Month", value: "current_month" },
-  { label: "Last Month", value: "last_month" },
-  { label: "Quarterly", value: "quarterly" },
-  { label: "Yearly", value: "yearly" },
-];
-
-// --- STYLES ---
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  listContainer: {
+    paddingBottom: 20,
+  },
   stickyWrapper: {
     zIndex: 10,
     elevation: 4,

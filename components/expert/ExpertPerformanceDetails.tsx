@@ -1,114 +1,107 @@
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
-    Dimensions,
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    useColorScheme,
-    View,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useColorScheme,
+  View,
 } from "react-native";
+import AvatarAtom from "../atoms/AvtarAtom";
+import IconButton from "../common/IconButton";
 
 const { width } = Dimensions.get("window");
 
-export default function ExpertPerformanceDetails() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const router = useRouter();
+interface StatCardProps {
+  iconName: string;
+  iconType?: "Material" | "Ionicons";
+  value: string;
+  label: string;
+  theme: ReturnType<typeof useAppTheme>;
+  isDark: boolean;
+}
 
-  const theme = {
-    bg: isDark ? ["#0f172a", "#020617"] : ["#f8fafc", "#e2e8f0"],
-
-    cardBg: isDark ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.95)",
-
-    text: isDark ? "#f8fafc" : "#0f172a",
-    subText: isDark ? "#94a3b8" : "#475569",
-
-    primary: "#3b82f6",
-
-    border: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
-
-    glassTint: isDark ? "dark" : ("light" as const),
-  };
-
-  const StatCard = ({ iconName, iconType, value, label }: any) => {
-    const IconComponent =
-      iconType === "Material" ? MaterialCommunityIcons : Ionicons;
-
-    return (
-      <BlurView
-        intensity={isDark ? 30 : 50}
-        tint={theme.glassTint as any}
-        style={[
-          styles.statCard,
-          {
-            backgroundColor: theme.cardBg,
-            borderColor: theme.border,
-
-            shadowColor: "#000",
-            shadowOpacity: isDark ? 0.2 : 0.08,
-            shadowRadius: 10,
-            shadowOffset: { width: 0, height: 6 },
-            elevation: isDark ? 0 : 4,
-          },
-        ]}
-      >
-        <IconComponent name={iconName} size={22} color={theme.primary} />
-
-        <View style={{ marginTop: 10 }}>
-          <Text style={[styles.statValue, { color: theme.text }]}>{value}</Text>
-          <Text style={[styles.statLabel, { color: theme.subText }]}>
-            {label}
-          </Text>
-        </View>
-      </BlurView>
-    );
-  };
+const StatCard = ({
+  iconName,
+  iconType,
+  value,
+  label,
+  theme,
+  isDark,
+}: StatCardProps) => {
+  const IconComponent =
+    iconType === "Material" ? MaterialCommunityIcons : Ionicons;
 
   return (
-    <LinearGradient colors={theme.bg as any} style={styles.container}>
+    <BlurView
+      intensity={isDark ? 30 : 50}
+      tint={isDark ? "dark" : ("light" as const)}
+      style={[
+        styles.statCard,
+        {
+          backgroundColor: theme.cardBg,
+          borderColor: theme.borderColor,
+          shadowColor: "#000",
+          shadowOpacity: isDark ? 0.2 : 0.08,
+          shadowRadius: 10,
+          shadowOffset: { width: 0, height: 6 },
+          elevation: isDark ? 0 : 4,
+        },
+      ]}
+    >
+      <IconComponent name={iconName as any} size={22} color={theme.primary} />
+
+      <View style={{ marginTop: 10 }}>
+        <Text style={[styles.statValue, { color: theme.textColor }]}>
+          {value}
+        </Text>
+        <Text style={[styles.statLabel, { color: theme.subText }]}>
+          {label}
+        </Text>
+      </View>
+    </BlurView>
+  );
+};
+
+export default function ExpertPerformanceDetails() {
+  const router = useRouter();
+  const theme = useAppTheme();
+  const isDark = useColorScheme() === "dark";
+
+  return (
+    <View style={[styles.card, { backgroundColor: theme.cardBg }]}>
       {/* HEADER */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => router.back()}
-          style={[
-            styles.iconBtn,
-            {
-              backgroundColor: isDark
-                ? "rgba(255,255,255,0.1)"
-                : "rgba(0,0,0,0.05)",
-            },
-          ]}
+          style={[styles.iconBtn, { backgroundColor: theme.iconBg }]}
         >
-          <Ionicons
-            name="arrow-back"
-            color={isDark ? "#fff" : "#000"}
-            size={22}
-          />
+          <Ionicons name="arrow-back" color={theme.iconColor} size={22} />
         </TouchableOpacity>
 
         <View style={styles.headerRight}>
           <TouchableOpacity
-            style={[
-              styles.iconBtn,
-              {
-                backgroundColor: isDark
-                  ? "rgba(255,255,255,0.1)"
-                  : "rgba(0,0,0,0.05)",
-              },
-            ]}
+            style={[styles.iconBtn, { backgroundColor: theme.iconBg }]}
           >
             <Ionicons
-              name="share-outline"
-              color={isDark ? "#fff" : "#000"}
+              name="share-social-outline"
+              color={theme.iconColor}
               size={22}
             />
           </TouchableOpacity>
+          <IconButton
+            icon="heart"
+            color="red"
+            active
+            height={40}
+            width={40}
+            iconSize={18}
+          />
 
           <TouchableOpacity style={styles.followBtn}>
             <Ionicons name="person-add" color="#fff" size={16} />
@@ -117,23 +110,21 @@ export default function ExpertPerformanceDetails() {
         </View>
       </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        // contentContainerStyle={{ paddingBottom: 40 }}
-      >
+      <ScrollView showsVerticalScrollIndicator={false}>
         {/* PROFILE */}
         <View style={styles.profileSection}>
-          <View style={styles.avatarBorder}>
-            <Image
-              source={{
-                uri: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200",
-              }}
-              style={styles.avatar}
+          <View
+            style={[styles.avatarBorder, { borderColor: theme.borderColor }]}
+          >
+            <AvatarAtom
+              name="Manish Shah"
+              height={110}
+              width={110}
+              uri="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200"
             />
           </View>
-
           <View style={styles.nameRow}>
-            <Text style={[styles.name, { color: theme.text }]}>
+            <Text style={[styles.name, { color: theme.textColor }]}>
               Manish Shah
             </Text>
             <MaterialCommunityIcons
@@ -153,12 +144,11 @@ export default function ExpertPerformanceDetails() {
         {/* INFO STRIP */}
         <BlurView
           intensity={isDark ? 20 : 40}
-          tint={theme.glassTint as any}
+          tint={isDark ? "dark" : "light"}
           style={[
             styles.infoStrip,
             {
-              backgroundColor: theme.cardBg,
-              borderColor: theme.border,
+              backgroundColor: theme.cardColor,
               shadowColor: "#000",
               shadowOpacity: isDark ? 0.15 : 0.05,
               shadowRadius: 8,
@@ -169,7 +159,7 @@ export default function ExpertPerformanceDetails() {
         >
           <View style={styles.infoItem}>
             <Text style={styles.infoLabel}>SEBI NO</Text>
-            <Text style={[styles.infoVal, { color: theme.text }]}>
+            <Text style={[styles.infoVal, { color: theme.textColor }]}>
               INR 12345699
             </Text>
           </View>
@@ -187,7 +177,7 @@ export default function ExpertPerformanceDetails() {
 
           <View style={styles.infoItem}>
             <Text style={styles.infoLabel}>EXPERIENCE</Text>
-            <Text style={[styles.infoVal, { color: theme.text }]}>
+            <Text style={[styles.infoVal, { color: theme.textColor }]}>
               10+ Years
             </Text>
           </View>
@@ -195,7 +185,7 @@ export default function ExpertPerformanceDetails() {
 
         {/* ABOUT */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>
+          <Text style={[styles.sectionTitle, { color: theme.textColor }]}>
             Performance Overview
           </Text>
           <Text style={[styles.aboutText, { color: theme.subText }]}>
@@ -210,39 +200,67 @@ export default function ExpertPerformanceDetails() {
             iconName="speedometer-outline"
             value="92.5%"
             label="Accuracy"
+            theme={theme}
+            isDark={isDark}
           />
           <StatCard
             iconName="swap-horizontal"
             iconType="Material"
             value="154"
             label="Total Trades"
+            theme={theme}
+            isDark={isDark}
           />
-          <StatCard iconName="trending-up" value="120" label="Target Hit" />
-          <StatCard iconName="trending-down" value="34" label="Stop Loss" />
-          <StatCard iconName="card-outline" value="₹45k" label="Avg Profit" />
-          <StatCard iconName="people-outline" value="12.4k" label="Followers" />
+          <StatCard
+            iconName="trending-up"
+            value="120"
+            label="Target Hit"
+            theme={theme}
+            isDark={isDark}
+          />
+          <StatCard
+            iconName="trending-down"
+            value="34"
+            label="Stop Loss"
+            theme={theme}
+            isDark={isDark}
+          />
+          <StatCard
+            iconName="card-outline"
+            value="₹45k"
+            label="Avg Profit"
+            theme={theme}
+            isDark={isDark}
+          />
+          <StatCard
+            iconName="people-outline"
+            value="12.4k"
+            label="Followers"
+            theme={theme}
+            isDark={isDark}
+          />
         </View>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-
+  card: {
+    flex: 1,
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 60,
+    paddingHorizontal: 16,
     marginBottom: 10,
   },
 
   headerRight: { flexDirection: "row", gap: 12 },
 
   iconBtn: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
@@ -265,10 +283,7 @@ const styles = StyleSheet.create({
     padding: 4,
     borderRadius: 65,
     borderWidth: 2.5,
-    borderColor: "#3b82f6",
   },
-
-  avatar: { width: 110, height: 110, borderRadius: 55 },
 
   nameRow: {
     flexDirection: "row",
@@ -294,7 +309,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
     borderRadius: 20,
     overflow: "hidden",
-    borderWidth: 1,
   },
 
   infoItem: { flex: 1, padding: 15, alignItems: "center" },

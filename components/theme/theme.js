@@ -1,6 +1,7 @@
 export const lightTheme = {
   statusBar: "light-content",
   bg: "#ffffff",
+  blurBg: "rgba(255,255,255,0.9)",
   cardBg: "transparent",
   boxBg: "#f8f9fa",
   textColor: "#848383",
@@ -12,17 +13,23 @@ export const lightTheme = {
   chatBtnBorder: "#000000",
   valColor: "#6b7280",
   primary: "#6366F1",
+  textSecondary: "#64748b",
   success: "#22C55E",
   warning: "#F59E0B",
   error: "#c0392b",
+  info: "#2f80c0",
   cancelBtnColor: "#e5e7eb",
   innerBox: "#F3F4F6",
   iconBg: "rgba(0,0,0,0.03)",
+  glassBorder: "rgba(0,0,0,0.05)",
+  iconColor: "#000000",
+  cardColor: "#FFFFFF",
 };
 
 export const darkTheme = {
   statusBar: "dark-content",
   bg: "#010D26",
+  blurBg: "rgba(1, 13, 38, 0.9)",
   cardBg: "#ffffff00",
   boxBg: "#FFFFFF0D",
   textColor: "#ffffff",
@@ -34,6 +41,7 @@ export const darkTheme = {
   chatBtnBorder: "#FFFFFF33",
   valColor: "#FFFFFF80",
   primary: "#6366F1",
+  textSecondary: "#94a3b8",
   success: "#22C55E",
   warning: "#F59E0B",
   error: "#c0392b",
@@ -41,4 +49,7 @@ export const darkTheme = {
   cancelBtnColor: "#818282",
   innerBox: "rgba(255,255,255,0.05)",
   iconBg: "rgba(255,255,255,0.05)",
+  glassBorder: "rgba(255,255,255,0.1)",
+  iconColor: "#ffffff",
+  cardColor: "#FFFFFF0F",
 };

@@ -157,6 +157,7 @@ export const fetchSubscriptionPlans = createAsyncThunk(
   },
 );
 
+// Fix the thunk — return pages from API
 export const fetchExpertPerformance = createAsyncThunk(
   "advisor/fetchExpertPerformance",
   async (params: any, { rejectWithValue }) => {
@@ -180,12 +181,17 @@ export const fetchExpertPerformance = createAsyncThunk(
         auth: true,
       });
 
-      return data;
+      return {
+        records: data.records,
+        total: data.total,
+        pages: data.pages, // ✅ include pages
+        page: data.page,
+      };
     } catch (error: any) {
       return rejectWithValue(
         error?.response?.data?.message ||
           error?.message ||
-          "Failed to fetch subscription details",
+          "Failed to fetch performance data",
       );
     }
   },
@@ -276,7 +282,11 @@ interface AdvisorState {
   error: string | null;
   subscriptionPlan: any;
   isLoadingPlan: boolean;
-  expertPastPerformance: any;
+  expertPastPerformance: {
+    records: any[];
+    total: number;
+    pages: number;
+  };
   isLoadingPast: boolean;
   isDownloading: boolean;
   fileUri: string;
@@ -295,7 +305,11 @@ const initialState: AdvisorState = {
   error: null,
   subscriptionPlan: {},
   isLoadingPlan: false,
-  expertPastPerformance: [],
+  expertPastPerformance: {
+    records: [],
+    total: 0,
+    pages: 0,
+  },
   isLoadingPast: false,
   isDownloading: false,
   fileUri: "",
@@ -371,14 +385,35 @@ const advisorSlice = createSlice({
         state.isLoadingPlan = false;
       })
       // fetch past performance
+      // Fix the reducer
       .addCase(fetchExpertPerformance.pending, (state) => {
         state.isLoadingPast = true;
       })
       .addCase(fetchExpertPerformance.fulfilled, (state, action) => {
         state.isLoadingPast = false;
-        state.expertPastPerformance = action.payload;
+
+        const { records, total, pages, page } = action.payload; // ✅ destructure pages
+
+        if (page === 1) {
+          state.expertPastPerformance = {
+            records,
+            total,
+            pages, // ✅ store pages
+          };
+        } else {
+          state.expertPastPerformance = {
+            ...state.expertPastPerformance,
+            records: [
+              ...(state.expertPastPerformance?.records ?? []),
+              ...records,
+            ], // ✅ safe spread
+            total,
+            pages, // ✅ keep pages updated
+          };
+        }
       })
-      .addCase(fetchExpertPerformance.rejected, (state, action: any) => {
+      .addCase(fetchExpertPerformance.rejected, (state) => {
+        // ✅ removed unnecessary `action: any`
         state.isLoadingPast = false;
       })
       // download research report
