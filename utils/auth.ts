@@ -1,6 +1,8 @@
+import { apiRequest } from "@/apiInstance";
+import { setUser } from "@/redux/slice/authSlice";
+import { store } from "@/redux/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { decode, encode } from "base-64";
-import { router } from "expo-router";
 
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE;
 
@@ -52,11 +54,33 @@ export const isAuthenticated = async () => {
   }
 };
 
+// export const logOut = async () => {
+//   try {
+//     await AsyncStorage.multiRemove(["t", "u", "r"]);
+//     router.replace("/(auth)/login");
+//   } catch (e) {
+//     console.error("Logout Error:", e);
+//   }
+// };
+
 export const logOut = async () => {
   try {
-    await AsyncStorage.multiRemove(["t", "u", "r"]);
-    router.replace("/(auth)/login");
+    const token = await AsyncStorage.getItem("t");
+
+    if (token) {
+      const data = await apiRequest(`/auth/logout`, {
+        method: "POST",
+        auth: true,
+        body: { session: token },
+      });
+
+      await AsyncStorage.multiRemove(["t", "u", "r"]);
+      await AsyncStorage.setItem("loggedOut", "true");
+      store.dispatch(setUser(null));
+      // router.replace("/(auth)/login");
+      // router.dismissAll();
+    }
   } catch (e) {
-    console.error("Logout Error:", e);
+    console.error("Logout Error:===", e);
   }
 };

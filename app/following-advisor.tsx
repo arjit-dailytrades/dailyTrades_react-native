@@ -1,7 +1,7 @@
 import NoData from "@/components/common/no-data/No-data";
 import PageHeader from "@/components/common/PageHeader";
 import TopBackground from "@/components/common/TopBackground";
-import AdvisorCard from "@/components/expert/AdvisorCard";
+import AdvisorCard from "@/components/organisms/FavoriteFollowExpertCard";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { fetchFollowingAdvisor } from "@/redux/slice/expertSlice";
 import { AppDispatch, RootState } from "@/redux/store";

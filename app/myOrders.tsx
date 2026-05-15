@@ -10,8 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import NoData from "@/components/common/no-data/No-data";
 import PageHeader from "@/components/common/PageHeader";
-import TopBackground from "@/components/common/TopBackground";
-import { OrderCard } from "@/components/my-orders/order-card";
+import { OrderCard } from "@/components/organisms/order-card";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { getOrderList } from "@/redux/slice/orderSlice";
 import { AppDispatch, RootState } from "@/redux/store";
@@ -58,7 +57,7 @@ const MyOrders = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
       <StatusBar barStyle="light-content" />
-      <TopBackground />
+      {/* <TopBackground /> */}
       <PageHeader title="My Orders" showBack={true} />
 
       <FlatList

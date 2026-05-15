@@ -1,5 +1,6 @@
 import { CommonHeader } from "@/components/common/CommonHeader";
 import TopBackground from "@/components/common/TopBackground";
+import ExpertPlanCard from "@/components/organisms/ExpertPlanCard";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import React from "react";
 import { ScrollView, Text } from "react-native";
@@ -20,6 +21,7 @@ function Position() {
         onPremiumPress={() => console.log("Premium Clicked")}
       />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
+        <ExpertPlanCard />
         <Text style={{ fontSize: 18, color: "#333" }}>Position Screen</Text>
       </ScrollView>
     </SafeAreaView>

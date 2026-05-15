@@ -1,4 +1,5 @@
 import GlowButton from "@/components/common/GlowButton";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import {
   Entypo,
   Feather,
@@ -21,6 +22,7 @@ const TAB_BAR_WIDTH = SCREEN_WIDTH - SIDE_MARGIN * 2 - GAP - BUTTON_WIDTH;
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const bottomPos = insets.bottom + 10;
+  const theme = useAppTheme();
 
   return (
     <View style={{ flex: 1 }}>
@@ -40,21 +42,21 @@ export default function TabLayout() {
             backgroundColor: "transparent",
             elevation: 0,
             shadowOpacity: 0,
-            paddingHorizontal: 5,
+            paddingHorizontal: 4,
             marginLeft: 15,
           },
 
           tabBarBackground: () => (
             <BlurView
-              intensity={60}
+              intensity={80}
               tint="dark"
               style={{
                 flex: 1,
-                borderRadius: 50,
+                borderRadius: 100,
                 overflow: "hidden",
                 borderWidth: 1,
-                borderColor: "rgba(255,255,255,0.18)",
-                backgroundColor: "rgba(255,255,255,0.06)",
+                borderColor: theme.borderColor,
+                backgroundColor: theme.cardBg + "80",
               }}
             />
           ),
@@ -65,7 +67,11 @@ export default function TabLayout() {
           options={{
             tabBarIcon: ({ color, focused }) => (
               <View
-                style={[styles.iconWrapper, focused && styles.activeCircle]}
+                style={[
+                  styles.iconWrapper,
+                  focused && styles.activeCircle,
+                  focused && { backgroundColor: theme.iconBg },
+                ]}
               >
                 <Entypo
                   name="home"
@@ -81,7 +87,11 @@ export default function TabLayout() {
           options={{
             tabBarIcon: ({ color, focused }) => (
               <View
-                style={[styles.iconWrapper, focused && styles.activeCircle]}
+                style={[
+                  styles.iconWrapper,
+                  focused && styles.activeCircle,
+                  focused && { backgroundColor: theme.iconBg },
+                ]}
               >
                 <Feather
                   name="users"
@@ -97,7 +107,11 @@ export default function TabLayout() {
           options={{
             tabBarIcon: ({ color, focused }) => (
               <View
-                style={[styles.iconWrapper, focused && styles.activeCircle]}
+                style={[
+                  styles.iconWrapper,
+                  focused && styles.activeCircle,
+                  focused && { backgroundColor: theme.iconBg },
+                ]}
               >
                 <MaterialIcons
                   name="shopping-bag"
@@ -113,7 +127,11 @@ export default function TabLayout() {
           options={{
             tabBarIcon: ({ color, focused }) => (
               <View
-                style={[styles.iconWrapper, focused && styles.activeCircle]}
+                style={[
+                  styles.iconWrapper,
+                  focused && styles.activeCircle,
+                  focused && { backgroundColor: theme.iconBg },
+                ]}
               >
                 <SimpleLineIcons
                   name="handbag"
@@ -157,7 +175,7 @@ const styles = StyleSheet.create({
   },
 
   activeCircle: {
-    backgroundColor: "#FFFFFF0D",
+    // backgroundColor: "#FFFFFF0D",
     shadowColor: "#fff",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.15,

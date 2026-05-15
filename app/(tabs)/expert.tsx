@@ -1,8 +1,9 @@
 import { CommonHeader } from "@/components/common/CommonHeader";
 import TopBackground from "@/components/common/TopBackground";
 import ViewPlanModal from "@/components/common/ViewPlanModal";
-import ExpertCard from "@/components/expert/ExpertCard";
 import ExpertFilter from "@/components/expert/ExpertFilter";
+import ExpertCard from "@/components/organisms/ExpertCard";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import {
   fetchExpert,
   fetchSubscriptionPlans,
@@ -16,14 +17,13 @@ import {
   FlatList,
   StyleSheet,
   Text,
-  useColorScheme,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function ExpertScreen() {
-  const colorScheme = useColorScheme();
+  const theme = useAppTheme();
   const dispatch = useDispatch<any>();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -74,19 +74,6 @@ export default function ExpertScreen() {
       );
     }
   }, [page]);
-
-  const isDark = colorScheme === "dark";
-
-  const theme = {
-    bg: isDark ? "#010D26" : "#ffffff",
-    card: isDark ? "#161B2C" : "#FFFFFF",
-    text: isDark ? "#FFFFFF" : "#1A2138",
-    subText: isDark ? "#9CA3AF" : "#666",
-    inputBg: isDark ? "#1F2937" : "#FFF",
-    accent: "#3B82F6",
-    border: isDark ? "#374151" : "#E5E7EB",
-    glassBorder: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
-  };
 
   const handleViewPlans = (item: any) => {
     setShowPlan(true);

@@ -71,7 +71,6 @@ const KYCQuizScreen: React.FC = () => {
   const handleBack = () => {
     if (!isFirst) setCurrentSection((prev) => prev - 1);
   };
-  console.log(questions, "==========questionsddd");
 
   if (isLoading) {
     return (
@@ -176,11 +175,13 @@ const KYCQuizScreen: React.FC = () => {
               buttonWidth={"50%"}
             />
           )}
-          <GlowButton
-            title={isLast ? "Submit" : "Next"}
-            buttonWidth={"50%"}
-            handleClick={handleNext}
-          />
+          {!isLast && (
+            <GlowButton
+              title={isLast ? "Submit" : "Next"}
+              buttonWidth={"50%"}
+              handleClick={handleNext}
+            />
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -84,7 +84,6 @@ export const fetchScriptStats = createAsyncThunk(
       if (advisorId) params.advisorId = advisorId;
 
       const queryString = new URLSearchParams(params).toString();
-      console.log("queryString:", queryString);
 
       const endpoint = `/script/trade-stats?${queryString}`;
 
@@ -92,12 +91,9 @@ export const fetchScriptStats = createAsyncThunk(
         method: "GET",
         auth: true,
       });
-      // console.log("stats:==", data);
 
       return data;
     } catch (error: any) {
-      // console.log("error:==", error);
-
       return rejectWithValue(error?.message || "Something went wrong");
     }
   },

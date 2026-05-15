@@ -157,6 +157,11 @@ function Navigation() {
 function AppContent() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+  // const [showSplash, setShowSplash] = useState(true);
+
+  // if (showSplash) {
+  //   return <AnimatedSplash onFinish={() => setShowSplash(false)} />;
+  // }
 
   return (
     <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
@@ -165,7 +170,6 @@ function AppContent() {
           <Navigation />
         </View>
       </View>
-
       <StatusBar style={isDark ? "light" : "dark"} />
       <Toast config={toastConfig} />
     </ThemeProvider>

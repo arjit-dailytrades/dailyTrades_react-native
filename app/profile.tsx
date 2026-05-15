@@ -82,13 +82,13 @@ export default function Profile() {
             />
             <MenuItem
               icon="person-add-outline"
-              title="Following Advisor"
+              title="Following Expert"
               route="/following-advisor"
               theme={theme}
             />
             <MenuItem
               icon="person-add-outline"
-              title="Favorite Advisor"
+              title="Favorite Expert"
               route="/favorite-advisor"
               theme={theme}
             />

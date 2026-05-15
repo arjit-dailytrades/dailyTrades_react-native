@@ -1,13 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-    useColorScheme,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  useColorScheme,
 } from "react-native";
 
 export default function ExpertFilter({
@@ -70,7 +70,7 @@ export default function ExpertFilter({
           )}
         </View>
       </View>
-      {/* Advisor type */}
+      {/* Expert type */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -93,7 +93,7 @@ export default function ExpertFilter({
         >
           <TouchableOpacity onPress={() => handleSetFavorite()}>
             <Text style={{ color: colors.text, fontSize: 12 }}>
-              Favorite Advisor
+              Favorite Expert
             </Text>
           </TouchableOpacity>
         </BlurView>
@@ -116,7 +116,7 @@ export default function ExpertFilter({
         >
           <TouchableOpacity onPress={() => handleSetFollow()}>
             <Text style={{ color: colors.text, fontSize: 12 }}>
-              Followed Advisor
+              Followed Expert
             </Text>
           </TouchableOpacity>
         </BlurView>

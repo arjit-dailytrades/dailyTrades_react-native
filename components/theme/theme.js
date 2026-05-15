@@ -1,6 +1,6 @@
 export const lightTheme = {
   statusBar: "light-content",
-  bg: "#ffffff",
+  bg: "#EEF3FF",
   blurBg: "rgba(255,255,255,0.9)",
   cardBg: "transparent",
   boxBg: "#f8f9fa",
@@ -24,6 +24,7 @@ export const lightTheme = {
   glassBorder: "rgba(0,0,0,0.05)",
   iconColor: "#000000",
   cardColor: "#FFFFFF",
+  bdgBg: "#3e5786",
 };
 
 export const darkTheme = {
@@ -52,4 +53,5 @@ export const darkTheme = {
   glassBorder: "rgba(255,255,255,0.1)",
   iconColor: "#ffffff",
   cardColor: "#FFFFFF0F",
+  bdgBg: "#15397C",
 };

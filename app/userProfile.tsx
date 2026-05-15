@@ -75,13 +75,13 @@ function profile() {
 
       <ScrollView style={styles.scrollView}>
         <UserDetailCard user={profile} />
-        {data.map((item, index) => (
+        {data?.map((item, index) => (
           <View key={index}>
             <Text style={[styles.sectionTitle, { color: theme.textColor }]}>
               {item.section}
             </Text>
             {item.items.map((val, idx) => (
-              <Card val={val} />
+              <Card key={idx} val={val} />
             ))}
           </View>
         ))}
