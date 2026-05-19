@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import AvatarAtom from "../atoms/AvtarAtom";
+import AvatarAtom from "../atoms/AvatarAtom";
 import BadgeAtom from "../atoms/BadgeAtom";
 import TextAtom from "../atoms/TextAtom";
 

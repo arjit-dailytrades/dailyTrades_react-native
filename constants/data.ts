@@ -1,3 +1,5 @@
+import { Strategy } from "@/components/organisms/StrategyNotificationCard";
+
 export const segmentOptions = [
   { label: "Equity", value: "EQ" },
   { label: "Future", value: "FU" },
@@ -52,3 +54,38 @@ export const statusMapping: AdvisorMapping = {
   TARGET_MET: "TARGET HIT",
   STOP_LOSS_MET: "STOP LOSS HIT",
 };
+
+export const DEFAULT_STRATEGY_LIST: Strategy[] = [
+  {
+    name: "Equity Cash",
+    segment: "EQ",
+    config: [
+      { rr: "<2", riskRewardValue: 2, condition: "LT", dailyAlert: 0 },
+      { rr: ">=2", riskRewardValue: 2, condition: "GTE", dailyAlert: 0 },
+    ],
+  },
+  {
+    name: "Stock Future",
+    segment: "FU",
+    config: [
+      { rr: "<2", riskRewardValue: 2, condition: "LT", dailyAlert: 0 },
+      { rr: ">=2", riskRewardValue: 2, condition: "GTE", dailyAlert: 0 },
+    ],
+  },
+  {
+    name: "Stock Options",
+    segment: "OPT",
+    config: [
+      { rr: "<2", riskRewardValue: 2, condition: "LT", dailyAlert: 0 },
+      { rr: ">=2", riskRewardValue: 2, condition: "GTE", dailyAlert: 0 },
+    ],
+  },
+  {
+    name: "Index Options",
+    segment: "INDXOPT",
+    config: [
+      { rr: "<2", riskRewardValue: 2, condition: "LT", dailyAlert: 0 },
+      { rr: ">=2", riskRewardValue: 2, condition: "GTE", dailyAlert: 0 },
+    ],
+  },
+];

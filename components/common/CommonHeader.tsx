@@ -5,23 +5,13 @@ import { router } from "expo-router";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import AvatarAtom from "../atoms/AvtarAtom";
+import AvatarAtom from "../atoms/AvatarAtom";
 
 interface ExactHeaderProps {
-  profileImageUri?: string;
-  onProfilePress?: () => void;
-  onPremiumPress?: () => void;
   onSearchPress?: () => void;
-  onBellPress?: () => void;
 }
 
-export const CommonHeader: React.FC<ExactHeaderProps> = ({
-  profileImageUri = "https://via.placeholder.com/150",
-  onProfilePress,
-  onPremiumPress,
-  onSearchPress,
-  onBellPress,
-}) => {
+export const CommonHeader: React.FC<ExactHeaderProps> = ({ onSearchPress }) => {
   const handleProfilePress = () => {
     router.push("/profile");
   };
@@ -31,6 +21,13 @@ export const CommonHeader: React.FC<ExactHeaderProps> = ({
   useEffect(() => {
     dispatch(getProfile());
   }, [dispatch]);
+
+  const onBellPress = () => {
+    router.push("/notification");
+  };
+  const onPremiumPress = () => {
+    router.push("/premiumTools");
+  };
 
   const name =
     `${profile?.profile?.fName || ""} ${profile?.profile?.lName || ""}`.trim();

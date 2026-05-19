@@ -3,8 +3,8 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 
 import { useAppTheme } from "@/hooks/use-app-theme";
-import FavoriteFollowExpertCardBody from "../molecules/favoriteFollowExpertCardBody";
-import FavoriteFollowExpertCardHeader from "../molecules/favoriteFollowExpertCardHeader";
+import FavoriteFollowExpertCardBody from "../molecules/FavoriteFollowExpertCardBody";
+import FavoriteFollowExpertCardHeader from "../molecules/FavoriteFollowExpertCardHeader";
 
 export default function AdvisorCard({ item }: { item: any }) {
   const theme = useAppTheme();

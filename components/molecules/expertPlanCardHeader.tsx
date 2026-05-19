@@ -1,7 +1,7 @@
 import { useAppTheme } from "@/hooks/use-app-theme";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import AvatarAtom from "../atoms/AvtarAtom";
+import AvatarAtom from "../atoms/AvatarAtom";
 import BadgeAtom from "../atoms/BadgeAtom";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────

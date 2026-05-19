@@ -14,7 +14,6 @@ export const getSubscriptionList = createAsyncThunk(
         method: "GET",
         auth: true,
       });
-
       return {
         records: data.records,
         total: data.total,

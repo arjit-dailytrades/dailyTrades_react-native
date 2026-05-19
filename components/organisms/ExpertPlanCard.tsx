@@ -1,8 +1,8 @@
 import { useAppTheme } from "@/hooks/use-app-theme";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import ExpertPlanCardBody from "../molecules/expertPlanCardBody";
-import ExpertPlanCardHeader from "../molecules/expertPlanCardHeader";
+import ExpertPlanCardBody from "../molecules/ExpertPlanCardBody";
+import ExpertPlanCardHeader from "../molecules/ExpertPlanCardHeader";
 
 interface FeeDetail {
   label: string;

@@ -2,8 +2,8 @@ import React from "react";
 import { Alert, StyleSheet, useColorScheme, View } from "react-native";
 
 import { router } from "expo-router";
-import ExpertCardBody from "../molecules/expertCardBody";
-import ExpertCardHeader from "../molecules/expertCardHeader";
+import ExpertCardBody from "../molecules/ExpertCardBody";
+import ExpertCardHeader from "../molecules/ExpertCardHeader";
 
 interface AdvisorMapping {
   [key: string]: string;

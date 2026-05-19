@@ -4,15 +4,15 @@ import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  useColorScheme,
-  View,
+    Dimensions,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    useColorScheme,
+    View,
 } from "react-native";
-import AvatarAtom from "../atoms/AvtarAtom";
+import AvatarAtom from "../atoms/AvatarAtom";
 import IconButton from "../common/IconButton";
 
 const { width } = Dimensions.get("window");

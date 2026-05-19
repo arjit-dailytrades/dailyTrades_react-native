@@ -133,6 +133,12 @@ export default function Profile() {
               title="Help & Support"
               route="/support"
               theme={theme}
+            />
+            <MenuItem
+              icon="settings-outline"
+              title="Settings"
+              route="/settings-screen"
+              theme={theme}
               isLast={true}
             />
           </View>

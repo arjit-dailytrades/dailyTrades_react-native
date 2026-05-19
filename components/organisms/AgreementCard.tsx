@@ -3,8 +3,8 @@ import { Alert, StyleSheet, View } from "react-native";
 
 import { useAppTheme } from "@/hooks/use-app-theme";
 import GlowButton from "../common/GlowButton";
-import AgreementCardBody from "../molecules/agreementCardBody";
-import AgreementCardHeader from "../molecules/agreementCardHeader";
+import AgreementCardBody from "../molecules/AgreementCardBody";
+import AgreementCardHeader from "../molecules/AgreementCardHeader";
 
 export default function AgreementCard({ item }: { item: any }) {
   const theme = useAppTheme();

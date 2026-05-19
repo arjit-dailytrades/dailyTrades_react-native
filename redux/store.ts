@@ -3,6 +3,7 @@ import agreementReducer from "./slice/agreementSlice";
 import authReducer from "./slice/authSlice";
 import advisorReducer from "./slice/expertSlice";
 import brokerReducer from "./slice/linkBrokerSlice";
+import notificationReducer from "./slice/notificationSlice";
 import orderReducer from "./slice/orderSlice";
 import profileReducer from "./slice/profileSlice";
 import riskProfileReducer from "./slice/riskProfileSlice";
@@ -26,6 +27,7 @@ export const store = configureStore({
     transaction: transactionReducer,
     riskProfile: riskProfileReducer,
     agreement: agreementReducer,
+    notification: notificationReducer,
   },
 });
 

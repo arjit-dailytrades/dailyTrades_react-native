@@ -3,9 +3,9 @@ import React, { memo, useEffect, useRef, useState } from "react";
 import { StyleSheet, View, useColorScheme } from "react-native";
 
 import { useAppTheme } from "@/hooks/use-app-theme";
-import TradeCardBody from "../molecules/tradeCardBody";
-import TradeCardFooter from "../molecules/tradeCardFooter";
-import TradeCardHeader from "../molecules/tradeCardHeader";
+import TradeCardBody from "../molecules/TradeCardBody";
+import TradeCardFooter from "../molecules/TradeCardFooter";
+import TradeCardHeader from "../molecules/TradeCardHeader";
 
 const TradeCard = memo(function TradeCard({ item, onUnlock }: any) {
   const theme = useAppTheme();

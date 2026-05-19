@@ -2,9 +2,9 @@ import { useAppTheme } from "@/hooks/use-app-theme";
 
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { OrderCardBody } from "../molecules/orderCardBody";
-import { OrderCardFooter } from "../molecules/orderCardFooter";
-import { OrderCardHeader } from "../molecules/orderCardHeader";
+import { OrderCardBody } from "../molecules/OrderCardBody";
+import { OrderCardFooter } from "../molecules/OrderCardFooter";
+import { OrderCardHeader } from "../molecules/OrderCardHeader";
 
 export const OrderCard = ({ item }: { item: any }) => {
   const isSuccess = item.status === "Success" || item.status === "SUCCESS";
